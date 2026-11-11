@@ -1,0 +1,1808 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>MatchFlow 70.</title>
+<style>
+:root{
+ --bg:#070a10;--card:#101620;--card2:#151d2a;--line:#273244;--text:#f5f7fb;
+ --muted:#8793a6;--cyan:#58e5ff;--purple:#8d68ff;--gold:#ffc84d;
+ --green:#39d98a;--red:#ff5c67;--gray:#596577;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% -12%,#25174f 0,#080b11 43%);color:var(--text);font:500 14px system-ui,-apple-system,Segoe UI,sans-serif}
+.app{width:min(760px,100%);margin:auto;padding:14px 11px 42px}
+.brand{padding-right:92px}
+.globalReset{position:fixed;top:10px;right:max(11px,calc((100vw - 760px)/2 + 11px));z-index:100;padding:9px 11px;border-radius:11px;border:1px solid #6b3038;background:#211116;color:#ff8d96;font-size:10px;font-weight:950;box-shadow:0 8px 24px #0007}
+.globalReset:hover{border-color:#ff5c67;background:#32141b}
+.topActions{position:fixed;top:10px;right:max(11px,calc((100vw - 760px)/2 + 11px));z-index:100;display:flex;gap:6px;align-items:center}.topActions button{padding:9px 11px;border-radius:11px;font-size:10px;font-weight:950;box-shadow:0 8px 24px #0007}.saveButton{border:1px solid #315b70;background:#10202a;color:#72ddff}.saveButton:hover{border-color:#58e5ff;background:#132b37}.saveToast{position:fixed;top:61px;left:50%;transform:translateX(-50%);z-index:190;min-width:190px;max-width:calc(100vw - 30px);padding:10px 14px;border-radius:13px;background:linear-gradient(180deg,#171f2c,#0d131c);border:1px solid #405066;color:#eef4fb;text-align:center;font-size:11px;font-weight:900;box-shadow:0 12px 30px #0008;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}.saveToast.show{opacity:1;transform:translateX(-50%) translateY(2px)}.saveToast.done{border-color:#2c8f67;color:#73efb1}.saveToast.error{border-color:#8f3c48;color:#ff929c}
+@media(max-width:520px){.topActions{right:8px}.topActions button{padding:8px 9px;font-size:9px}.saveToast{top:56px}}
+.confirmOverlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;background:#02040ad9;backdrop-filter:blur(8px)}
+.confirmOverlay.show{display:flex}
+.confirmBox{width:min(430px,100%);background:linear-gradient(180deg,#171d29,#0d131c);border:1px solid #4a3340;border-radius:20px;padding:18px;box-shadow:0 24px 70px #000b}
+.confirmBox h2{font-size:16px;margin:0 0 8px}.confirmBox p{font-size:12px;line-height:1.55;color:#aeb8c7;margin:0 0 15px}
+.confirmActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.confirmActions button{padding:12px;border-radius:12px;font-weight:950;border:1px solid #303b4d;background:#182130;color:#fff}.confirmActions .danger{border-color:#9d3b47;background:#6e202c;color:#fff}
+.brand{font-size:29px;font-weight:950;letter-spacing:-1.4px}
+.sub{color:var(--muted);margin:1px 0 12px}
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;position:sticky;top:0;z-index:20;padding:7px 0;background:#080b11ee;backdrop-filter:blur(12px)}
+.nav button{border:1px solid var(--line);background:#111722;color:var(--muted);font-weight:900;padding:12px;border-radius:13px}
+.nav button.active{background:linear-gradient(90deg,#694cff,#a45cff);color:white;border-color:#8e6bff}
+.page{display:none}.page.active{display:block}
+.card{background:linear-gradient(180deg,#121923,#0d131c);border:1px solid var(--line);border-radius:19px;padding:14px;margin:9px 0;box-shadow:0 14px 34px #0006}
+h2{font-size:14px;margin:0 0 11px;letter-spacing:.2px}
+.small{font-size:11px;color:var(--muted)}
+.stepper{display:grid;grid-template-columns:46px 1fr 46px;gap:7px;align-items:center}
+.stepper button{height:48px;border:1px solid #354157;background:#182130;font-size:24px;font-weight:900;color:white}
+.stepper .value{height:48px;display:flex;align-items:center;justify-content:center;background:#0b1018;border:1px solid #303b4e;border-radius:13px;font-size:22px;font-weight:900}
+.reco{display:grid;gap:7px}
+.option{width:100%;text-align:left;background:#0b1119;border:1px solid #2a3546;border-radius:14px;padding:11px;color:#fff}
+.option.chosen{border-color:#8061ff;background:linear-gradient(90deg,#17142c,#0d121a);box-shadow:0 0 0 1px #6d52dc55}
+.optionWrap{margin-top:6px}.teamChoice{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 10px;border-radius:11px;background:#101721;border:1px solid #2b3749;color:#fff;font-weight:900}.teamChoice.open{border-color:#8061ff;background:#151329}.teamChoice .small{color:var(--cyan);font-weight:900}.teamChoice .chev{font-size:11px;color:#9ba6b7}.planOptions{display:none;gap:5px;padding:5px 3px 2px}.planOptions.open{display:grid}.planMini{width:100%;text-align:left;padding:8px 9px;border-radius:9px;background:#0b1118;border:1px solid #252f3f;color:#dfe5ed;font-size:10px}.planMini:hover,.planMini.selected{border-color:#8061ff;background:#17142b}.planMini b{color:#fff}.planMini .meta{color:#aab4c4;margin-left:4px}.selectedPlan{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:5px;padding:7px 8px;border-radius:9px;background:#12182a;border:1px solid #4c3aa0;font-size:10px}.selectedPlan strong{color:#bdaeff}.selectedPlan button{padding:3px 7px;background:transparent;border:0;color:#9da8b7}
+
+.optionTop{display:flex;justify-content:space-between;gap:8px}.optionTop b{font-size:13px}.optionTop span{color:var(--cyan);font-weight:900}
+.optionBottom{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:10px;margin-top:5px}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+input{width:100%;background:#0a1018;color:var(--text);border:1px solid #2d394c;border-radius:12px;padding:11px;outline:0}
+input:focus{border-color:#8162ff}
+.player{padding:10px;background:#0b1119;border:1px solid #253144;border-radius:15px;margin:7px 0}
+.phead{display:flex;gap:7px;align-items:center}.phead .pname{display:none}.phead input{flex:1;width:100%;min-width:0}
+.phead input{flex:1;padding:8px}
+.levels{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}
+.levels button{font-size:9px;padding:8px 2px;min-width:0;background:#182130;color:#cbd2dc;border:1px solid #303c50}
+.levels .on{background:linear-gradient(180deg,#8061ff,#5a40d7);color:white;border-color:#9077ff;font-weight:900}
+.abi{width:100%;margin-top:6px;padding:8px;background:#17150e;color:#b7bfca;border:1px solid #493b1c}.abi.on{background:linear-gradient(90deg,#c88e22,#ffc84d);color:#1c1405;font-weight:950}
+.primary{width:100%;padding:14px;background:linear-gradient(90deg,#6549ff,#ae55ff);font-weight:950;color:#fff;border:0;border-radius:14px}
+.teams{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.team{background:#0a1018;border:1px solid #2a3545;border-radius:16px;padding:11px}
+.teamtitle{display:flex;justify-content:space-between;align-items:center;gap:6px;font-weight:950}
+.teamedit{color:#9aa6b8;font-size:11px}
+.member{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #1d2634}.member:last-child{border:0}
+.member .abiBtn{padding:2px 5px;background:transparent;color:var(--gold);font-weight:950;border:0}
+.score{color:var(--cyan);font-size:10px}
+.timerTop{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.counter{display:grid;grid-template-columns:38px 1fr 38px;gap:5px;align-items:center}.counter button{height:40px;background:#182130;border:1px solid #334158;color:white;font-size:20px;font-weight:900}
+.counter .num{height:40px;border:1px solid #303b4e;background:#0a1018;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}
+.timerPhase{text-align:center;margin:13px 0 7px;padding:8px 10px;border-radius:10px;background:#111a27;border:1px solid #30405a;color:#dce5f2;font-size:11px;font-weight:950;letter-spacing:.4px}.goldGoalBadge{display:none;text-align:center;margin:0 auto 7px;padding:6px 13px;border-radius:999px;background:#5b4300;border:1px solid #ffd84d;color:#ffd84d;font-size:11px;font-weight:1000;letter-spacing:1px}.goldGoalBadge.show{display:block}.clockWrap{position:relative;border-radius:18px;overflow:hidden}.goldPageEffects{display:none;position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(circle,rgba(255,238,132,.78) 0 1.5px,transparent 2.5px),radial-gradient(circle,rgba(255,194,30,.62) 0 1.1px,transparent 2.2px);background-size:83px 83px,57px 57px;opacity:.5}.goldPageEffects.show{display:block}.goldGoalActive{background:linear-gradient(180deg,#6c5100,#201806)!important;border-color:#ffd84d!important;box-shadow:0 0 0 1px rgba(255,215,70,.16),0 0 18px rgba(255,190,30,.16),inset 0 0 20px rgba(255,215,70,.08)!important}.goldGoalActive .clock{color:#ffe36b!important;text-shadow:0 0 10px rgba(255,220,100,.5)}.goldPageActive{position:relative;background:linear-gradient(180deg,rgba(102,75,0,.98),rgba(22,17,5,.98))!important}.goldPageActive .goldGoalHero{display:block}.goldPageActive>.card{position:relative;z-index:2;background:linear-gradient(180deg,rgba(55,43,8,.94),rgba(20,18,9,.96));border-color:#8d6a13;box-shadow:0 8px 22px rgba(0,0,0,.32),0 0 14px rgba(255,196,30,.06)}.goldPageActive h2,.goldPageActive .resultsHead h2,.goldPageActive .small,.goldPageActive .legend{color:#ffe9a0}.goldPageActive .counter button,.goldPageActive .counter .num,.goldPageActive .stepper button,.goldPageActive .stepper .value{border-color:#a77d17;background:#2b2209;color:#fff0ae}.goldPageActive .timerBtns .start,.goldPageActive .timerBtns .pause,.goldPageActive .timerBtns .reset{filter:saturate(.95)}.goldPageActive .fixture{background:linear-gradient(180deg,#2b2208,#171308);border-color:#8e6c17}.goldPageActive .decisionBtn{box-shadow:0 0 9px rgba(255,202,49,.18)}.goldPageActive .clock{font-size:88px}.goldPageActive .timerPhase{background:#2a2108;border-color:#a77d17;color:#ffe9a0}.goldPageActive .sessionInfoBig b{color:#ffe36b}.goldModeActive .nav button.active{background:linear-gradient(90deg,#9a6b00,#ffd84d);color:#241800;border-color:#ffe36b}.goldGoalHero{display:none;text-align:center;margin:4px auto 12px;position:relative;z-index:4}.goldGoalHero strong{display:block;font-size:25px;line-height:1.05;letter-spacing:1.5px;color:#ffe36b;text-shadow:0 0 7px #fff2a8,0 0 15px rgba(255,196,30,.55)}.goldGoalHero span{display:block;margin:8px auto 0;max-width:92%;font-size:15px;line-height:1.3;font-weight:950;letter-spacing:.25px;color:#fff0a8}.goldGoalHero.show{display:block;animation:goldHeroReveal 4.8s ease both}@keyframes goldHeroReveal{0%{opacity:0;transform:translateY(7px) scale(.98)}12%{opacity:1;transform:translateY(0) scale(1)}78%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-4px) scale(1.01)}}
+.streakFire{position:relative;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-left:6px;font-size:25px;line-height:1;filter:drop-shadow(0 0 5px rgba(255,145,0,.35))}.streakFire span{position:absolute;top:10px;left:0;right:0;text-align:center;color:#fff;font-size:10px;font-weight:1000;text-shadow:0 1px 2px #000}.sessionInfoBig{text-align:center;margin-top:10px;color:#d9e1ec;font-size:12px;font-weight:850;line-height:1.45}.sessionInfoBig b{color:var(--cyan);font-size:14px}.clock{text-align:center;font-size:58px;line-height:1;font-weight:950;letter-spacing:1px;margin:12px 0;color:#5cf0c2}
+.timerBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.timerBtns button{padding:12px;font-weight:900;border:0;border-radius:12px}.start{background:linear-gradient(90deg,#6549ff,#ae55ff);color:#fff;border:1px solid #9475ff}.pause{background:#253143;color:white}.reset{background:#6549ff;color:white}
+.resultsHead{display:flex;justify-content:space-between;align-items:center;gap:7px;position:relative;min-height:36px}.resultsHead .resultTools{position:absolute;right:0;top:0;margin:0}.legend{display:flex;gap:9px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px}.g{background:var(--green)}.d{background:#8b96a8}.r{background:var(--red)}
+.resultTable{overflow-x:auto;padding-bottom:2px}.resultGrid{display:grid;gap:7px;min-width:0}.fixture{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;background:#0b1119;border:1px solid #273244;border-radius:13px;padding:8px}.fixtureNo{font-size:11px;font-weight:950;color:var(--muted);text-align:center}.fixtureTeams{display:grid;grid-template-columns:1fr 30px 1fr;gap:5px;align-items:center;font-weight:900;font-size:11px}.fixtureTeams span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fixtureTeams span:last-child{text-align:right}.fixtureTeams b{text-align:center;color:var(--cyan);font-size:9px}.fixtureResult{min-width:88px;border:1px solid #334158;border-radius:9px;background:#182130;color:#aeb8c7;padding:7px 8px;font-size:9px;font-weight:950;cursor:pointer}.fixtureResult.win{background:#30204d;border-color:#8d68ff;color:#e5d9ff}.fixtureResult.draw{background:#333b47;border-color:#778296;color:#d7dce4}.fixtureResult.loss{background:#4a2026;border-color:#ff5b68;color:#ff858e}.resultCell{display:none}
+
+.resultRow{display:grid;grid-template-columns:110px repeat(var(--games),38px);gap:5px;align-items:center}
+.resultTeam{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resultCell{height:34px;border-radius:9px;border:1px solid #334158;background:#182130;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:950;color:#6e7b8f}
+.resultCell.win{background:#30204d;border-color:#8d68ff;color:#e5d9ff}.resultCell.draw{background:#333b47;border-color:#778296;color:#d7dce4}.resultCell.loss{background:#4a2026;border-color:#ff5b68;color:#ff858e}.decisionFixture{grid-template-columns:28px 1fr;position:relative}.decisionLayout{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:6px;align-items:start}.decisionSide{min-width:0}.decisionTeam{display:block;font-weight:950;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.decisionTeam.right{text-align:right;padding-top:2px}.decisionVs{text-align:center;color:var(--cyan);font-size:9px;padding-top:2px}.resultTools{display:flex;align-items:center;gap:10px}.resultTool{width:34px;height:34px;border-radius:10px;border:1px solid #334158;background:#182130;color:#dce5f2;font-size:17px;font-weight:1000;cursor:pointer;display:flex;align-items:center;justify-content:center}.resultTool:hover{border-color:#5a6b84}.resultTool.locked{background:#263143;border-color:#7f8da3}.resultTool:disabled{opacity:.38;cursor:not-allowed}.decisionButtons{display:grid;grid-template-columns:52px 44px 52px;justify-content:center;gap:6px;margin-top:7px;align-items:center;justify-items:center}.decisionBtn{width:36px;height:36px;border-radius:50%;border:2px solid #3a4658;color:#fff;font-size:16px;font-weight:1000;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 7px rgba(0,0,0,.25);transition:.15s}.decisionBtn:disabled{opacity:.38;cursor:not-allowed;filter:saturate(.45)}.decisionBtn.selected{transform:scale(1.08);box-shadow:0 0 0 2px rgba(255,255,255,.2),0 0 12px rgba(92,240,194,.28)}.resultLocked .decisionBtn,.resultLocked .fixtureResult{opacity:.38;cursor:not-allowed;filter:saturate(.45);pointer-events:none}.winBtn{background:linear-gradient(135deg,#6549ff,#a45cff);border-color:#b7a0ff}.drawBtn{background:#667080;border-color:#aeb7c5}.decisionLabels{display:grid;grid-template-columns:52px 44px 52px;justify-content:center;gap:6px;margin-top:3px;color:#8f9caf;font-size:7px;font-weight:850;text-align:center;align-items:start}.decisionLabels span{white-space:nowrap;text-align:center}.goldDecision{border-color:#d6a900;background:linear-gradient(180deg,#302500,#0b1119)}.goldDecision .decisionBtn{box-shadow:0 0 12px rgba(255,200,77,.25)}.goldDecision .drawBtn{opacity:.3;pointer-events:none}
+.modePicker{display:grid;gap:6px}.modeBtn{display:grid;gap:2px;text-align:left;padding:9px 10px;border-radius:11px;border:1px solid #2b3749;background:#0b1119;color:#c9d1dc;cursor:pointer}.modeBtn b{font-size:10px;color:#fff}.modeBtn span{font-size:9px;line-height:1.35;color:#8995a6}.modeBtn.active{border-color:#8061ff;background:#17142c;box-shadow:0 0 0 1px #6d52dc55}.ranking{display:grid;gap:7px}.rank{display:grid;grid-template-columns:35px 42px 1fr auto;gap:8px;align-items:center;background:#0b1119;border:1px solid #273244;border-radius:14px;padding:8px}
+.rankNum{font-size:15px;font-weight:950;text-align:center}.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#263b59,#17202e);font-weight:950;position:relative}.badge{position:absolute;right:-4px;top:-7px;font-size:16px}.rankName{font-weight:950}.rankStats{font-size:10px;color:var(--muted)}.rankPts{font-size:19px;font-weight:950;color:var(--gold)}
+.infoIntro{background:linear-gradient(180deg,#16132b,#0e141e);border:1px solid #3b3560;border-radius:19px;padding:17px 15px;margin:9px 0 10px;box-shadow:0 14px 34px #0006}.infoIntro h1{font-size:18px;margin:0 0 10px;letter-spacing:-.3px}.infoIntro p,.infoCard p{font-size:11px;line-height:1.55;color:#aeb8c7;margin:6px 0}.infoIntro p{font-size:12px}.infoIntro b,.infoCard b{color:#eef2f7}.infoLead{color:#d7cfff!important;margin-top:10px!important}.infoCard{background:linear-gradient(180deg,#121923,#0d131c);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin:8px 0;box-shadow:0 10px 25px #0004}.infoCard h2{font-size:12px;margin:0 0 6px}.infoExample{background:#0a1018;border:1px solid #2b3749;border-radius:10px;padding:8px 9px;color:#cfc5ff;font-size:11px;margin:7px 0}.infoTwo{display:grid;gap:5px;background:#0a1018;border:1px solid #273244;border-radius:10px;padding:8px 9px;font-size:10px;color:#aeb8c7}.infoSectionTitle{font-size:12px;font-weight:950;letter-spacing:.3px;color:#d8d0ff;margin:15px 2px 6px} .clear{background:transparent;border:1px solid #303b4d;color:#9da8b7;padding:7px 10px;border-radius:10px;font-size:10px}
+.next{margin-top:9px}.back{margin-top:9px;background:#182130}
+@media(max-width:520px){.teams{grid-template-columns:1fr}.phead .pname{width:34%}.levels button{font-size:8px}.names{grid-template-columns:1fr}.timerTop{grid-template-columns:1fr}}
+.shareCard{margin:28px 0 9px;background:linear-gradient(180deg,#121923,#0d131c);border:1px solid #334156;border-radius:14px;padding:10px 11px;box-shadow:0 10px 25px #0004}.shareTitle{font-size:10px;font-weight:950;letter-spacing:.5px;color:#d8d0ff;margin-bottom:7px}.shareActionsMain{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}.shareActionsMain button{border:1px solid #4a3b82;background:#17152a;color:#f0ebff;border-radius:10px;font-size:10px;font-weight:950;padding:9px 6px;min-height:38px}.shareActionsMain button:hover{border-color:#8061ff}.shareCode{width:100%;height:29px;min-height:29px;resize:none;overflow:hidden;background:#080d14;border:1px solid #252f3f;border-radius:8px;color:#748095;padding:6px 8px;font:700 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.35px;outline:none}.shareCode:focus{border-color:#58e5ff;color:#dfe7f1}.shareStatus{margin-top:4px;color:#8793a6;font-size:8px;line-height:1.25;min-height:10px}#add.back{border:1px solid #6b5bd2;background:linear-gradient(135deg,#30236f,#20194a);color:#fff;border-radius:12px;min-height:44px;font-weight:900;letter-spacing:.35px;box-shadow:0 5px 14px #0003;transition:transform .12s,border-color .12s,filter .12s}#add.back:active{transform:scale(.985);filter:brightness(1.18)}.goldenRuleInfo{position:relative;overflow:hidden;border-left:5px solid #f2c230!important;background:linear-gradient(90deg,#33290d,#171923 38%)!important}.goldenRuleInfo:before{content:"🟨";display:inline-block;margin:0 6px 4px 0;color:#f2c230}.deviceNotice{display:none;margin:7px 0 9px;padding:8px 10px;border-radius:11px;border:1px solid #6a4d23;background:#20180c;color:#e6c98e;font-size:9px;line-height:1.4}.deviceNotice.show{display:block}.deviceSetup{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(180deg,#5f35c9,#26115f);overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;pointer-events:auto}.deviceSetup.hidden{display:none}.deviceSetupBox{width:min(420px,100%);padding:24px 18px;border-radius:24px;background:linear-gradient(180deg,#171326,#0d1019);border:1px solid #8061ff;box-shadow:0 30px 90px #10052ecc;text-align:center}.deviceLogo{font-size:29px;font-weight:950;letter-spacing:-1px;color:#fff}.deviceSetupTitle{font-size:18px;font-weight:950;margin-top:18px}.deviceSetupSub{font-size:11px;color:#aeb8c7;margin:5px 0 15px}.deviceName{margin-bottom:9px;text-align:center}.deviceChoices{display:grid;gap:8px}.deviceChoices button{position:relative;z-index:1;display:block;width:100%;padding:13px 10px;border-radius:13px;border:1px solid #4a3c76;background:#17142a;color:#fff;font-weight:950;font-size:10px;min-height:48px;touch-action:manipulation;-webkit-appearance:none;appearance:none;pointer-events:auto}.deviceChoices button:hover,.deviceChoices button:active{border-color:#a27dff;background:#211b3b}.deviceLoading{display:none;margin-top:13px;color:#b8bfd0;font-size:10px;align-items:center;justify-content:center;gap:5px}.deviceLoading.show{display:flex}.dots{display:inline-flex;gap:3px}.dots i{width:4px;height:4px;border-radius:50%;background:#9f83ff;animation:mfDot 1s infinite ease-in-out}.dots i:nth-child(2){animation-delay:.14s}.dots i:nth-child(3){animation-delay:.28s}@keyframes mfDot{0%,70%,100%{opacity:.25;transform:translateY(0)}35%{opacity:1;transform:translateY(-3px)}}.deviceChoices.loading{pointer-events:none;opacity:.65};
+button,input,textarea{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+html[data-matchflow-device="apple"] body{padding-top:var(--mf-safe-top)}
+body.appleMode .nav{padding-top:max(7px,var(--mf-safe-top))}
+body.appleMode button{cursor:pointer}
+body.androidMode button{touch-action:manipulation}
+body.computerMode button{cursor:pointer}
+.platformBadge{display:block;width:max-content;margin:2px auto 7px;padding:4px 8px;border:1px solid #303b4d;border-radius:999px;color:#8e9bad;font-size:8px;font-weight:950;letter-spacing:.5px;opacity:.9}
+body.appleMode .platformBadge{border-color:#57478a;color:#b8a8ff}
+body.androidMode .platformBadge{border-color:#315b70;color:#79dfff}
+body.computerMode .platformBadge{border-color:#3c4655;color:#b6c0ce}
+
+.strategyBox{margin-top:10px;background:#0a1018;border:1px solid #273244;border-radius:12px;padding:9px}.strategyBox h3{font-size:11px;margin:0 0 6px;color:#d8d0ff}.strategyRef{padding:7px 0;border-top:1px solid #1d2735}.strategyRef:first-of-type{border-top:0}.strategyRefTop{display:flex;justify-content:space-between;gap:8px;font-size:10px}.strategyRefTop span{color:var(--cyan);font-weight:950}.strategyRefMeta{font-size:9px;color:#9faaba;margin-top:2px;line-height:1.35}
+/* v67: reliable touch targets and an optional wider desktop workspace */
+button,input,textarea{position:relative;pointer-events:auto;touch-action:manipulation;-webkit-user-select:auto;user-select:auto}
+.deviceSetup.hidden{display:none!important;pointer-events:none!important}
+@media(min-width:900px){body.computerMode .app{width:min(1160px,100%)}body.computerMode #page1.active{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}body.computerMode #page1>.card{min-width:0}body.computerMode #page1>.card:nth-of-type(5),body.computerMode #page1>.card:nth-of-type(6){grid-column:1/-1}body.computerMode #page2 .teams{grid-template-columns:repeat(3,minmax(0,1fr))}body.computerMode #page3{max-width:1000px;margin:auto}}
+@media(max-width:899px){body.computerMode #page1.active{display:block}}
+.modeInfoGrid{display:grid;grid-template-columns:1fr;gap:0;border:1px solid #303b4d;border-radius:12px;overflow:hidden;background:#0a1018}.modeInfo{padding:11px;border-bottom:1px solid #303b4d;min-width:0}.modeInfo:last-child{border-bottom:0}.goldenRuleInfo{background:#111725;border-top:1px solid #39445a}.modeInfo b{font-size:11px;color:#e9e5ff}.modeInfo p{margin:5px 0 0}.infoExample{white-space:normal;line-height:1.6}
+@media(max-width:600px),(max-height:520px){.deviceSetup{align-items:flex-start;justify-content:center;padding:12px;}.deviceSetupBox{margin:auto 0;max-height:calc(100dvh - 24px);overflow-y:auto;padding:18px 14px}.deviceLogo{font-size:24px}.deviceSetupTitle{margin-top:12px}}
+</style>
+
+<meta name="application-name" content="MatchFlow 66.">
+<meta name="apple-mobile-web-app-title" content="MatchFlow 66.">
+<meta name="theme-color" content="#080b11">
+<meta name="manifest" href="./manifest.webmanifest">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="description" content="MatchFlow 70. — takım oluşturma, maç eşleştirme ve halı saha maç takibi.">
+</head>
+<body>
+<div id="deviceSetup" class="deviceSetup" aria-modal="true" role="dialog">
+  <div class="deviceSetupBox">
+    <div class="deviceLogo">MATCHFLOW 70.</div>
+    <div class="deviceSetupTitle">Başlamadan önce</div>
+    <div class="deviceSetupSub">Adını yaz ve kullandığın cihazı seç.</div>
+    <input id="profileName" class="deviceName" autocomplete="name" placeholder="Adın" maxlength="32">
+    <div id="deviceChoices" class="deviceChoices">
+      <button type="button" data-device="apple" onclick="window.matchFlowChooseDevice(this)">APPLE / IPHONE / IPAD</button>
+      <button type="button" data-device="android" onclick="window.matchFlowChooseDevice(this)">ANDROID / SAMSUNG</button>
+      <button type="button" data-device="computer" onclick="window.matchFlowChooseDevice(this)">BİLGİSAYAR / LAPTOP</button>
+    </div>
+    <div id="deviceLoading" class="deviceLoading" aria-live="polite">
+      <span class="deviceLoadingText">MatchFlow hazırlanıyor</span><span class="dots"><i></i><i></i><i></i></span>
+    </div>
+    <div id="deviceDiag" role="status" aria-live="polite" style="margin-top:8px;color:#aeb8c7;font-size:10px;line-height:1.4"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='matchflow_profile_v69';
+  var choosing=false;
+  function showStatus(message){
+    var el=document.getElementById('deviceDiag');
+    if(el)el.textContent=message;
+  }
+  function choose(btn){
+    if(choosing)return;
+    var input=document.getElementById('profileName');
+    var name=(input&&input.value||'').trim();
+    if(!name){
+      if(input){input.focus();input.placeholder='Önce adını yaz';}
+      showStatus('Önce adını yazmalısın.');
+      return;
+    }
+    var choice=btn&&btn.getAttribute('data-device')||'computer';
+    choosing=true;
+    showStatus('Seçim alındı: '+choice+'. Uygulama başlatılıyor…');
+    var choices=document.getElementById('deviceChoices');
+    var loading=document.getElementById('deviceLoading');
+    if(choices)choices.classList.add('loading');
+    if(loading)loading.classList.add('show');
+    var detail={name:name,device:choice};
+    window.__matchFlowBoot=detail;
+    try{localStorage.setItem(KEY,JSON.stringify({name:name,device:choice,version:69}));}catch(e){}
+    // Start directly first. Fall back to the existing app event bridge if startup code is not ready.
+    function start(){
+      try{
+        if(typeof window.matchFlowStartApp==='function'){
+          window.matchFlowStartApp(detail);
+          showStatus('Başlatma isteği gönderildi.');
+        }else{
+          var ev;
+          if(typeof window.CustomEvent==='function')ev=new CustomEvent('matchflow:device-selected',{detail:detail});
+          else{ev=document.createEvent('CustomEvent');ev.initCustomEvent('matchflow:device-selected',false,false,detail);}
+          window.dispatchEvent(ev);
+          if(typeof window.matchFlowStartApp==='function')window.matchFlowStartApp(detail);
+          else{
+            choosing=false;
+            if(choices)choices.classList.remove('loading');
+            if(loading)loading.classList.remove('show');
+            showStatus('Başlatma kodu bulunamadı. Dosyayı Safari içinde web sayfası olarak açmayı dene.');
+          }
+        }
+      }catch(err){
+        choosing=false;
+        if(choices)choices.classList.remove('loading');
+        if(loading)loading.classList.remove('show');
+        showStatus('Başlatma hatası: '+(err&&err.message?err.message:'bilinmeyen hata'));
+      }
+    }
+    start();
+    window.setTimeout(function(){
+      if(!window.__matchFlowBootHandled && typeof window.matchFlowStartApp==='function')start();
+    },150);
+  }
+  window.matchFlowChooseDevice=choose;
+  // Native click is the primary path. Pointer/touch fallback is intentionally not used
+  // to avoid cancelling iOS's synthesized click event.
+  function findDeviceButton(e){
+    var target=e.target;
+    return target&&target.closest?target.closest('#deviceChoices button[data-device]'):null;
+  }
+  // iOS fallback: handle a real touch directly, without cancelling the browser's click.
+  document.addEventListener('touchend',function(e){
+    var btn=findDeviceButton(e);
+    if(btn)choose(btn);
+  },{capture:false,passive:true});
+  document.addEventListener('click',function(e){
+    var btn=findDeviceButton(e);
+    if(btn)choose(btn);
+  },false);
+  // Keep direct activation available for keyboard/accessibility and older WebViews.
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    var btn=findDeviceButton(e);
+    if(btn){e.preventDefault();choose(btn);}
+  },false);
+})();
+</script>
+<div class="app">
+  <div class="brand">MatchFlow 70.</div>
+
+  <div class="nav">
+    <button id="nav1" class="active">1 · MAÇ ÖNCESİ</button>
+    <button id="nav2">2 · MAÇ</button>
+    <button id="nav3">3 · SİSTEM</button>
+  </div>
+  <div class="topActions"><button id="globalReset" class="globalReset" type="button">🗑 TÜMÜNÜ SİL</button></div>
+
+  <div id="confirmOverlay" class="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="confirmBox">
+      <h2 id="confirmTitle">⚠️ TÜM VERİLER SİLİNSİN Mİ?</h2>
+      <p>Oyuncu isimleri, seviyeler, ABI seçimleri, takım isimleri, maç sonuçları, süre ayarları ve kaydedilen tüm MatchFlow verileri silinecek. Bu işlem geri alınamaz.</p>
+      <div class="confirmActions">
+        <button id="cancelGlobalReset" type="button">İPTAL</button>
+        <button id="confirmGlobalReset" class="danger" type="button">EVET, HER ŞEYİ SİL</button>
+      </div>
+    </div>
+  </div>
+
+  <section id="page1" class="page active">
+    <div class="card">
+      <h2>MAÇ AYARLARI</h2>
+      <div class="timerTop">
+        <div>
+          <div class="small">OYUNCU SAYISI</div>
+          <div class="stepper">
+            <button id="peopleMinus">−</button><div class="value" id="peopleValue">20</div><button id="peoplePlus">+</button>
+          </div>
+        </div>
+        <div>
+          <div class="small">TOPLAM SÜRE</div>
+          <div class="stepper">
+            <button id="sessionMinus">−</button><div class="value" id="sessionValue">60</div><button id="sessionPlus">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="small" style="text-align:center;margin-top:8px">20 kişi ve 60 dakika varsayılan gelir. Toplam süreyi istediğin gibi değiştirebilirsin.</div>
+    </div>
+
+    <div class="card">
+      <div class="resultsHead"><h2>OYUN MODU</h2></div>
+      <div class="legend" style="margin-bottom:9px">Önce oyun tarzını seç. Maç programı ve maç dağılımı buna göre hazırlanır.</div>
+      <div id="modePicker" class="modePicker"></div>
+    </div>
+
+    <div class="card">
+      <h2>TAKIM SAYISI</h2>
+      <div class="stepper">
+        <button id="teamMinus">−</button><div class="value" id="teamValue">4</div><button id="teamPlus">+</button>
+      </div>
+    </div>
+
+    <div id="recommend" class="card"></div>
+
+    <div class="card">
+      <h2>TAKIM İSİMLERİ</h2>
+      <div id="names" class="names"></div>
+    </div>
+
+    <div class="card">
+      <h2>OYUNCULAR</h2>
+      <div id="players"></div>
+      <button id="add" class="back" style="width:100%">OYUNCU EKLE</button>
+    </div>
+
+    <div class="card">
+      <button id="generate" class="primary">TAKIMLARI OLUŞTUR</button>
+    </div>
+  </section>
+
+
+  <section id="page3" class="page">
+    <div class="shareCard">
+      <div class="shareTitle">PAYLAŞIM KODU</div>
+      <div class="shareActionsMain">
+        <button id="copyShareCode" type="button">KOPYALA</button>
+        <button id="pasteShareCode" type="button">YAPIŞTIR</button>
+      </div>
+      <textarea id="shareCode" class="shareCode" rows="1" spellcheck="false" autocomplete="off" autocapitalize="characters" placeholder="Kod alanı"></textarea>
+      <div id="shareStatus" class="shareStatus" aria-live="polite"></div>
+    </div>
+    <div id="deviceNotice" class="deviceNotice"></div>
+    <div class="infoIntro">
+      <h1>⚙️ 📘 MATCHFLOW NASIL ÇALIŞIR?</h1>
+      <p>MatchFlow; oyuncu sayısı, oyuncu seviyeleri, ABI işaretleri, takım sayısı, seçilen oyun modu ve süreleri birlikte kullanarak maç organizasyonu oluşturur. Buradaki amaç yalnızca oyuncuları sırayla takımlara dağıtmak değil; takım büyüklüklerini ve toplam oyun gücünü olabildiğince yakın tutmaktır.</p>
+      <p>Uygulama tek bir ortak veri yapısı kullanır. Bir takımın adı veya kilidi hangi sayfada değiştirilirse değiştirilsin aynı bilgi diğer sayfalarda, kayıt sisteminde ve aktarım kodunda da kullanılır. Elle yazılan takım adı, otomatik ABI takım adından ve ilk sayfadaki başlangıç adından önceliklidir.</p>
+      <p>MatchFlow çevrimdışı kullanılabilir. Cihazlar arasında otomatik bulut eşitlemesi yapmaz; başka cihaza geçerken paylaşım kodu kullanılır.</p>
+    </div>
+
+    <div class="infoSectionTitle">💾 🔄 KAYIT VE AKTARIM</div>
+    <div class="infoCard"><h2>Paylaşım kodu ve güncellik</h2><p>Paylaşım kodu; oyuncu adlarını ve seviyelerini, ABI seçimlerini, takım listesini, takım adlarını ve kilitlerini, oyun modunu, maç programını, sonuçları ve ilgili ayarları taşır. Kod, uygulamanın o andaki verilerinden üretilir. Değişikliklerden sonra kod yenilenirken kısa süreli olarak hazırlanıyor olabilir.</p><p><b>KOPYALA</b> güncel kodu panoya alır. <b>YAPIŞTIR</b> panodaki kodu okuyup mevcut projenin yerine aktarır; birleştirme yapmaz. Kod geçersizse mevcut veriler korunmalıdır. Tarayıcı pano izni vermezse kod alanına elle yapıştırılabilir.</p><div class="infoExample">Cihaz A: oyuncular + takımlar + sonuçlar → aktarım kodu → Cihaz B: aynı proje verileri</div><p>Çalışan sayacın o anki saniyesi başka cihaza taşınmaz; aktarımda maç saati yeni bir başlatma durumuna alınır.</p></div>
+    <div class="infoCard"><h2>Otomatik kayıt ve sıfırlama</h2><p>Oyuncu bilgileri, takım isimleri, takım kilitleri, maç sonuçları, süreler ve mod verileri tarayıcının yerel kayıt alanına yazılır. Sayfa yenilendiğinde veya tekrar açıldığında kayıt okunarak ekran yeniden kurulur. Tarayıcı verileri silinirse veya özel gezinme kısıtları uygulanırsa yerel kayıt garanti edilemez.</p><p><b>TÜMÜNÜ SİL</b> bütün organizasyonu temizler ve başlangıç ayarlarına döndürür. Bu işlem, yalnızca takım adını değiştirmek veya aktarım kodunu yenilemek için kullanılmamalıdır.</p></div>
+
+    <div class="infoSectionTitle">⚖️ 🧩 TAKIMLARI DENGELEME</div>
+    <div class="infoCard"><h2>1. Önce kişi sayısı dengelenir</h2><p>Oyuncu sayısı takım sayısına bölünür. Bölüm her takımın temel oyuncu sayısını, kalan ise bir fazla oyuncu alacak takım sayısını verir.</p><div class="infoExample"><b>20 ÷ 4 = 5</b><br>Takım 1: 5 oyuncu ─ Takım 2: 5 oyuncu ─ Takım 3: 5 oyuncu ─ Takım 4: 5 oyuncu</div><div class="infoExample"><b>22 ÷ 4 = 5 kalan 2</b><br>Takım 1: 6 ─ Takım 2: 6 ─ Takım 3: 5 ─ Takım 4: 5</div><p>Bu nedenle takım büyüklükleri arasındaki fark normal koşullarda en fazla 1 oyuncudur.</p></div>
+    <div class="infoCard"><h2>2. Oyuncu seviyeleri puana çevrilir</h2><p>Her oyuncunun seviyesi 1 ile 5 yıldız arasındadır. Takımın toplam yıldızı, içindeki oyuncuların seviyelerinin toplamıdır. Takım ortalaması ise toplam yıldızın oyuncu sayısına bölünmesiyle bulunur.</p><div class="infoExample"><b>Örnek takım:</b><br>4★ + 3★ + 2★ + 5★ + 1★ = <b>15★</b><br>15 ÷ 5 oyuncu = <b>3,0 ortalama</b></div><p>Sistem yalnızca toplam yıldızı karşılaştırmaz. Oyuncu sayıları farklıysa ortalamaları da hesaba katar; böylece daha kalabalık takımın yalnızca kişi sayısı nedeniyle avantaj kazanması azaltılmaya çalışılır.</p></div>
+    <div class="infoCard"><h2>3. Takım dağıtımı nasıl seçilir?</h2><p>Oyuncuların seviyeleri ve ABI işaretleri okunur. Sistem farklı dağıtım denemeleri yapar; her denemede takımların toplam yıldız farkı, en güçlü ve en zayıf takım arasındaki fark, takım ortalamaları ve kişi sayısı farkı için bir denge maliyeti hesaplanır. Maliyeti daha düşük olan dağıtım saklanır.</p><div class="infoExample"><b>Basitleştirilmiş örnek:</b><br>Dağılım A: 16★ · 15★ · 14★ · 15★ → fark 2★<br>Dağılım B: 19★ · 13★ · 14★ · 14★ → fark 6★<br><b>A</b> daha yakın bir toplam dağılımı gösterir.</div><p>Gerçek hesaplamada yalnızca bu örnekteki toplam fark yoktur; toplam puanların varyansı, en yüksek-en düşük toplam farkı, takım ortalamaları ve takım büyüklükleri de birlikte değerlendirilir. Denemelerde küçük rastgelelik bulunduğu için aynı verilerle farklı oluşturma denemeleri birebir aynı takımı vermeyebilir.</p></div>
+    <div class="infoCard"><h2>ABI dağılımı</h2><p>ABI oyuncuların da 1–5 yıldız seviyesi vardır; seviyeleri takım gücü hesabına aynen katılır. ABI sayısı takım sayısına eşit veya fazlaysa, dağıtım hesabı her takımda en az bir ABI bulunmasını güçlü bir öncelik olarak ele alır. Fazladan ABI'ler de mümkün olduğunca dengeli paylaştırılır. ABI sayısı yetersizse her takıma ABI koymak matematiksel olarak mümkün değildir; kalan ABI'ler puan dengesiyle birlikte dağıtılır.</p><div class="infoExample">4 takım + 4 ABI → hedef: 1 ABI / takım<br>4 takım + 2 ABI → iki takımda ABI, diğer iki takımda ABI yok</div><p>ABI etiketi tek başına oyuncunun seviyesini artırmaz. Takım dengesini etkileyen sayısal değer oyuncunun yıldız seviyesidir; ABI işareti ise dağıtım önceliği sağlar.</p></div>
+    <div class="infoCard"><h2>Takım adları ve kilitler</h2><p>İlk sayfadaki isimler başlangıç adlarıdır. İkinci sayfada elle yazılan ad, ana takım adı olarak kaydedilir ve ilk sayfadaki alanla eşitlenir. Elle girilmiş ad; ABI adına basılması, yeniden çizim veya kilitleme sırasında otomatik olarak değiştirilmez.</p><p>Kilit yalnızca adın düzenlenmesini engeller. Kilitlemek veya kilidi açmak takım adını silmez. Aynı isim ve kilit bilgisi kayıt ve aktarım verisine de yazılır.</p></div>
+
+    <div class="infoSectionTitle">📅 🎮 MAÇ PROGRAMI VE OYUN MODLARI</div>
+    <div class="infoCard"><h2>Süre ve maç planı</h2><p>Planlama; takım sayısı, toplam kullanılabilir süre, maç süresi ve değişim aralığına göre yapılır. Sistem mümkün olduğunda takımların maç sayısını eşit tutan ve aynı rakibin tekrarını azaltan programları değerlendirir. Takım sayısı tek olduğunda her turda bir takımın boş kalması gerekebilir; bu durum eşit maç sayısı koşullarını etkiler.</p><div class="infoExample">Toplam 12 maç / 4 takım<br>Her takımın maç sayısı hedefi: 6<br>Her maç iki takıma yazılır: 12 × 2 = 24 takım-maçı<br>24 ÷ 4 = 6 maç / takım</div><p>Bu örnek, maç adedinin takım başına nasıl sayıldığını gösterir. Süreye sığmayan maçlar veya modun tur kuralları nedeniyle uygulamanın sunduğu program seçenekleri farklı olabilir.</p></div>
+    <div class="infoCard"><h2>Oyun modları</h2><div class="modeInfoGrid"><div class="modeInfo"><b>🏆 Klasik Lig</b><p>Takımların birbirleriyle karşılaşmaları planlanır. Galibiyet 2, beraberlik 1, mağlubiyet 0 puandır. Puan tablosu girilen sonuçlara göre güncellenir.</p></div><div class="modeInfo"><b>⚔️ Eleme</b><p>Eşleşmede kazanan sonraki tura ilerler, kaybeden elenir. Takım sayısı ikiye uygun değilse tur yapısı ve olası bay geçişleri dikkate alınır.</p></div><div class="modeInfo"><b>🔥 Merdiven</b><p>Kazanan takım sahada kalır; kaybeden çıkar ve sıradaki takım gelir. Böylece devam eden takımın galibiyet serisi izlenebilir.</p></div><div class="modeInfo"><b>🇨🇭 İsviçre Kaosu</b><p>Takımlar tur sonuçlarına göre benzer performans gruplarında eşleştirilmeye çalışılır. Önceki rakip tekrarları mümkün olduğunca azaltılır; tek bir mağlubiyet otomatik eleme anlamına gelmez.</p></div></div><div class="modeInfo goldenRuleInfo"><b>🟨 🏆 Altın Gol</b><p>Altın Gol, bu dört moddan ayrı bir turnuva modu değildir; eşitlik durumunda devreye giren ek bir kuraldır. Eşitlik seçildiğinde sayaç uzatmaya geçer. Kazanan seçimiyle maç sonucu kesinleşir. Sonuç geri alma işlemi kazanan seçimini geri alır; Altın Gol durumunu geçmiş bir sonuç gibi ayrıca geri yüklemez.</p></div></div>
+    <div class="infoCard"><h2>Sonuçlar ve geri alma</h2><p>Sonuç seçimi, ilgili maçın sonucunu ve moda bağlı ilerlemeyi günceller. Eleme modunda kazanan bir sonraki tura taşınır; Merdiven modunda sıradaki karşılaşma hazırlanır; İsviçre modunda sonraki tur eşleşmeleri sonuçlara göre kurulur. Klasik Lig puanları sonuçlardan hesaplanır.</p><p><b>Sonuçları geri alma</b> ile son işlemlerden en fazla üçü geri alınabilir. Bu, takım adı kilidinden ayrı bir özelliktir. Sonuç kilidi etkinse sonuç seçimi ve geri alma engellenir.</p></div>
+    <div class="infoCard"><h2>Sayaçlar ve sesler</h2><p>Maç sayacı süre bitişini sistem saatine göre hesaplar; arka plana geçildiğinde de geçen süreyi yeniden hesaplayabilir. Sayaç kontrolleri, maçın o anki durumuna göre güvenli biçimde etkin veya devre dışı kalmalıdır.</p><p>Sesler, buton işlemlerini ayırt etmeye yardımcı olur. Tarayıcı ses başlatmayı ilk kullanıcı etkileşimine bağlayabilir; bu nedenle ses kapalıysa veya tarayıcı izin vermiyorsa görsel kontroller çalışmaya devam etmelidir.</p></div>
+    <div class="infoCard" style="text-align:center"><p><b>Bizi kullandığınız için teşekkür ederiz!</b></p><p><b>Hayırlı maçlar ve bol gollü karşılaşmalar dileriz.</b></p></div>
+  </section>
+
+  <section id="page2" class="page">
+    <div class="card">
+      <div class="resultsHead"><h2>OLUŞAN TAKIMLAR</h2><span class="small">ABI adına basınca takım adı değişir</span></div>
+      <div id="teams" class="teams"></div>
+      <button id="backToSetup" class="back" style="width:100%">← TAKIMLARI DÜZENLE</button>
+    </div>
+
+    <div class="card">
+      <h2>MAÇ SÜRESİ</h2>
+      <div class="timerTop">
+        <div><div class="small">MAÇ SÜRESİ <b style="color:var(--cyan)">1–120 DK</b></div><div class="counter"><button id="matchMinus">−</button><div class="num" id="matchValue">10</div><button id="matchPlus">+</button></div></div>
+        <div><div class="small">DEĞİŞİM <b style="color:var(--gold)">1–10 DK</b></div><div class="counter"><button id="swapMinus">−</button><div class="num" id="swapValue">1</div><button id="swapPlus">+</button></div></div>
+      </div>
+      <div class="small" style="text-align:center;margin-top:8px;color:#c9d1dc">Maç süresi otomatik önerilir. Başlatmadan önce 1–120 dakika arasında değiştirebilirsin. 60 dakikayı geçtiğinde timer saat:dakika:saniye biçimine geçer.</div>
+      <div id="goldPageEffects" class="goldPageEffects"></div>
+      <div id="goldGoalHero" class="goldGoalHero"><strong>⚡ ALTIN GOL MODU AKTİF ⚡</strong><span id="goldGoalMessage">🥇 İLK GOL MAÇI BİTİRİR • SÜRE SINIRSIZ ∞</span></div>
+      <div id="timerPhase" class="timerPhase">⚽ MAÇ HAZIR</div>
+      <div id="timerContext" class="small" style="text-align:center;margin:0 0 7px;color:#c9d1dc;font-weight:800"></div>
+      <div id="goldGoalBadge" class="goldGoalBadge">🥇 ALTIN GOL</div>
+      <div id="clockWrap" class="clockWrap"><div class="clock" id="clock">10:00</div></div>
+      <div class="timerBtns"><button class="start" id="start">BAŞLAT</button><button class="pause" id="pause">DURDUR</button><button class="reset" id="reset">SIFIRLA</button></div>
+      <div id="sessionInfo" class="sessionInfoBig">60 DK • TOPLAM MAÇ PROGRAMI</div>
+    </div>
+
+    <div class="card">
+      <div class="resultsHead">
+        <h2>KİM KİMLE OYNAYACAK?</h2>
+      </div>
+      <div class="legend" style="margin-bottom:9px"><span>Sonucu seçtiğinde eşleşmeler ve sıralama seçtiğin oyun moduna göre otomatik güncellenir.</span></div>
+      <div class="resultTable"><div id="resultGrid" class="resultGrid"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="resultsHead"><h2>TAKIM SIRALAMASI</h2><div class="resultTools"><button class="resultTool" data-result-undo="1" aria-label="Sonucu en fazla 3 adım geri al">←</button><button class="resultTool" data-result-lock="1" aria-label="Sonuçları kilitle veya aç">🔓</button></div></div>
+      <div id="ranking" class="ranking"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const levelNames=["HIÇ OYNAMAMIŞ","AZ OYNAMIŞ","ORTA","İYİ","ÇOK İYİ"];
+let people=10, sessionMinutes=60, teamCount=4, players=[], generatedTeams=[], results=[], timer=null, remaining=600, manualTimer=false, timerPhase='ready', goldGoalActive=false, goldGoalGame=-1, timerEndAt=0;
+let teamNames=[], teamLocks=[];
+let resultLocked=false, resultUndoStack=[];
+let audioCtx=null;
+const goldGoalPhrases=[
+  '🥇 ALTIN GOL AÇILDI, ARTIK KAÇAMAZSINIZ.',
+  '⚡ BİRİNİZ GOL ATACAK. BAŞKA ÇARE YOK.',
+  '🟡 HAKEM SAATE BAKTI… SAAT YOK. ∞',
+  '⚡ KİM GOL ATARSA O ÇIKIYOR. BU KADAR.',
+  '🥇 BERABERLİK YASAKLANDI.',
+  '🟡 ALTIN GOL GELDİ. PANİK YOK… GALİBA.',
+  '⚡ ŞİMDİ ŞANSLI OLAN KAZANACAK.',
+  '🥇 TOPA DİKKAT. BİRİSİ TARİHE GEÇECEK.',
+  '🟡 SONSUZ SÜRE MODU: AÇILDI.',
+  '⚡ ARTIK İLK GOLÜ ATAN KRAL.',
+  '🟡 SAAT DURDU, MAÇ DURMADI.',
+  '🥇 ALTIN GOL: ÇÜNKÜ BERABERLİK YETMEDİ.',
+  '⚡ BİR GOL YETER. GERİSİ HİKÂYE.',
+  '🟡 TAMAM, ŞİMDİ CİDDİYİZ.',
+  '⚡ MAÇ BİTMEDİ… SADECE SABRIMIZ BİTTİ.',
+  '🥇 İLK GOLÜ BULAN EVE ERKEN GİDİYOR.',
+  '🟡 SONSUZ MAÇ DEĞİL… SONSUZ GERİLİM.',
+  '🥇 ALTIN GOL BAŞLADI. TOPU KAYBETMEYİN.',
+  '⚡ BERABERE KALAMADINIZ, ŞİMDİ ÇÖZÜN.',
+  '🥇 ALTIN GOL: BOSS FIGHT BAŞLADI.'
+];
+
+let playMode='league', modeQueue=[], modeActive=[], modeChampion=null, modeRoundWinners=[], modeRoundPlayed=[];
+let modeScores=[], modeOpponents=[], modeEliminated=[], modeLadderStreak=[], modeRound=0, modeSwissRounds=0;
+let deviceChoice='', profileName='';
+
+// MatchFlow verileri tarayıcıda kalıcı olarak saklanır. Böylece uygulamadan
+// çıkıp birkaç dakika sonra geri gelindiğinde isimler, ayarlar, sonuçlar ve
+// timer kaldığı yerden korunur. Değişiklikler otomatik olarak kalıcı kayda alınır. Temizleme yalnızca kullanıcı onayıyla yapılır.
+const STORAGE_KEY='matchflow_state_v66';
+const LEGACY_STORAGE_KEY='matchflow_state_v61';
+const LEGACY_STORAGE_KEY_V62='matchflow_state_v62';
+const LEGACY_STORAGE_KEY_V63='matchflow_state_v63';
+const LEGACY_STORAGE_KEY_V65='matchflow_state_v65';
+const PROFILE_KEY='matchflow_profile_v69';
+const LEGACY_STORAGE_KEY_V60='matchflow_state_v60';
+const LEGACY_STORAGE_KEY_V59='matchflow_state_v59';
+const LEGACY_STORAGE_KEY_V58='matchflow_state_v58';
+const LEGACY_STORAGE_KEY_V56='matchflow_state_v56';
+const LEGACY_STORAGE_KEY_OLD='matchflow_state_v54';
+const LEGACY_STORAGE_KEY_OLD2='matchflow_state_v53';
+const LEGACY_STORAGE_KEY_OLD3='matchflow_state_v52';
+const LEGACY_STORAGE_KEY_OLD4='matchflow_state_v51';
+const LEGACY_STORAGE_KEY_OLD5='matchflow_state_v47';
+function safeStorage(){try{return window.localStorage}catch(e){return null}}
+let idbMirrorTimer=null,idbMirrorLatest='';
+function mirrorToIndexedDB(serialized){
+  idbMirrorLatest=serialized;
+  if(idbMirrorTimer)return;
+  idbMirrorTimer=setTimeout(()=>{
+    idbMirrorTimer=null;const latest=idbMirrorLatest;
+    try{
+      if(!('indexedDB' in window))return;
+      const req=indexedDB.open('MatchFlow66Backup',1);
+      req.onupgradeneeded=()=>{try{req.result.createObjectStore('state')}catch(e){}};
+      req.onsuccess=()=>{try{const db=req.result,tx=db.transaction('state','readwrite');tx.objectStore('state').put(latest,'latest');tx.oncomplete=()=>db.close();tx.onerror=()=>db.close();}catch(e){}};
+    }catch(e){}
+  },700);
+}
+let persistenceRequested=false;
+function requestPersistentStorage(){
+  if(persistenceRequested)return;persistenceRequested=true;
+  try{if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
+}
+
+const LEGACY_PROFILE_KEY_V64='matchflow_profile_v64';
+function profileStore(){try{return window.localStorage}catch(e){return null}}
+function saveProfile(){const st=profileStore();if(!st)return;try{st.setItem(PROFILE_KEY,JSON.stringify({name:profileName,device:deviceChoice,version:69}))}catch(e){}}
+function loadProfile(){const st=profileStore();if(!st)return false;try{const x=JSON.parse(st.getItem(PROFILE_KEY)||st.getItem(LEGACY_PROFILE_KEY_V64)||'null');if(!x||!x.name||!['apple','android','computer'].includes(x.device))return false;profileName=String(x.name);deviceChoice=x.device;return true}catch(e){return false}}
+function showDeviceSetup(){window.__matchFlowBootHandled=false;const o=$('deviceSetup');if(o)o.classList.remove('hidden');const choices=$('deviceChoices');if(choices)choices.classList.remove('loading');const loading=$('deviceLoading');if(loading)loading.classList.remove('show');if($('profileName'))$('profileName').value=profileName||'';}
+function hideDeviceSetup(){const o=$('deviceSetup');if(o)o.classList.add('hidden')}
+function applyDeviceMode(){document.documentElement.dataset.matchflowDevice=deviceChoice||'computer';document.body.classList.toggle('appleMode',deviceChoice==='apple')}
+function deviceActual(){const ua=navigator.userAgent||'';if(/iPad|iPhone|iPod/i.test(ua))return'apple';if(/Android/i.test(ua))return'android';return'computer'}
+
+// Platform architecture: one MatchFlow core, three independent adapters with the same contract.
+const PlatformAdapters={
+  apple:{name:'apple',label:'Apple',tap:'click',safeArea:true,keyboard:true,hold:'pointer'},
+  android:{name:'android',label:'Android',tap:'click',safeArea:false,keyboard:true,hold:'pointer'},
+  computer:{name:'computer',label:'Computer',tap:'click',safeArea:false,keyboard:true,hold:'pointer'}
+};
+let platform=PlatformAdapters.computer;
+function getPlatformAdapter(kind){return PlatformAdapters[kind]||PlatformAdapters.computer}
+function platformBoot(kind){
+  platform=getPlatformAdapter(kind);
+  document.documentElement.dataset.matchflowDevice=platform.name;
+  document.body.dataset.matchflowPlatform=platform.name;
+  document.body.classList.toggle('appleMode',platform.name==='apple');
+  document.body.classList.toggle('androidMode',platform.name==='android');
+  document.body.classList.toggle('computerMode',platform.name==='computer');
+  document.documentElement.style.setProperty('--mf-safe-top',platform.safeArea?'env(safe-area-inset-top, 0px)':'0px');
+  let badge=document.getElementById('platformBadge');
+  if(!badge){badge=document.createElement('div');badge.id='platformBadge';badge.className='platformBadge';const nav=document.querySelector('.nav');if(nav?.parentNode)nav.parentNode.insertBefore(badge,nav.nextSibling);}
+  badge.textContent=platform.name==='apple'?'APPLE MODU':platform.name==='android'?'ANDROID MODU':'BİLGİSAYAR MODU';
+}
+function platformTap(el,fn){
+  if(!el)return;
+  el.addEventListener('click',fn,{passive:true});
+}
+function platformHold(el,step,delay=1000,rate=110){
+  if(!el)return;
+  let active=false,repeated=false,delayTimer=null,repeatTimer=null,lastTouch=0;
+  const stop=()=>{active=false;clearTimeout(delayTimer);clearInterval(repeatTimer);delayTimer=repeatTimer=null};
+  const start=()=>{if(active)return;active=true;repeated=false;delayTimer=setTimeout(()=>{repeated=true;step();repeatTimer=setInterval(step,rate)},delay)};
+  const finish=()=>{if(repeated){repeated=false;return true}stop();return false};
+  const hasPointer='PointerEvent' in window;
+  if(hasPointer){
+    el.addEventListener('pointerdown',e=>{if(e.isPrimary===false)return;lastTouch=Date.now();try{el.setPointerCapture?.(e.pointerId)}catch(_){}start()},{passive:true});
+    ['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(ev=>el.addEventListener(ev,stop,{passive:true}));
+  }else{
+    el.addEventListener('touchstart',()=>{lastTouch=Date.now();start()},{passive:true});
+    el.addEventListener('touchend',stop,{passive:true});
+    el.addEventListener('touchcancel',stop,{passive:true});
+    el.addEventListener('mousedown',start);el.addEventListener('mouseup',stop);el.addEventListener('mouseleave',stop);
+  }
+  el.addEventListener('click',e=>{if(repeated){e.preventDefault();e.stopImmediatePropagation();repeated=false;stop()}},{capture:true});
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+}
+function updateDeviceNotice(){const el=$('deviceNotice');if(!el)return;const actual=deviceActual();if(deviceChoice&&actual!==deviceChoice){el.classList.add('show');el.textContent='Cihaz seçimin mevcut tarayıcıyla farklı görünüyor. MatchFlow yine çalışır; dokunma ve pano özellikleri bu ortamın tarayıcısına bağlıdır.'}else{el.classList.remove('show');el.textContent=''}}
+function utf8ToBase64Url(text){const bytes=new TextEncoder().encode(text);let bin='';for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function base64UrlToUtf8(str){const b64=str.replace(/-/g,'+').replace(/_/g,'/');const pad='='.repeat((4-b64.length%4)%4);const bin=atob(b64+pad);const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
+function compactShareSnapshot(){
+  // Device choice/profile are local presentation preferences only; never include them in transfer data.
+  const idx=new Map(players.map((p,i)=>[p,i]));
+  const gt=generatedTeams.map(team=>team.map(p=>idx.has(p)?idx.get(p):players.findIndex(x=>x.name===p?.name&&x.score===p?.score&&x.abi===p?.abi)));
+  return {v:1,p:people,s:sessionMinutes,t:teamCount,u:players.map(p=>[p.name||'',p.score||3,p.abi?1:0]),g:gt,r:results,n:teamNames,l:teamLocks.map(x=>x?1:0),m:playMode,q:selectedPlanKey,f:fixtures,mm:+$('matchValue').textContent,sm:+$('swapValue').textContent,mq:modeQueue,ma:modeActive,mc:modeChampion,rw:modeRoundWinners,rp:modeRoundPlayed,ms:modeScores,mo:modeOpponents,me:modeEliminated,ml:modeLadderStreak,mr:modeRound,sw:modeSwissRounds,rl:resultLocked?1:0,ru:resultUndoStack.slice(-3)};
+}
+function expandCompactShare(x){
+  if(!x||x.v!==1)throw new Error('Geçersiz MatchFlow kodu');
+  const ps=Array.isArray(x.u)?x.u.map(p=>({name:String(p?.[0]||''),score:clamp(+p?.[1]||3,1,5),abi:!!p?.[2]})):[];
+  const teams=Array.isArray(x.g)?x.g.map(team=>Array.isArray(team)?team.map(i=>ps[+i]).filter(Boolean):[]):[];
+  return {people:clamp(+x.p||20,4,56),sessionMinutes:clamp(+x.s||60,5,120),teamCount:Math.max(2,Math.min(10,+x.t||4)),players:ps,generatedTeams:teams,results:Array.isArray(x.r)?x.r:[],teamNames:Array.isArray(x.n)?x.n:[],teamLocks:Array.isArray(x.l)?x.l.map(Boolean):[],playMode:['league','knockout','ladder','swiss'].includes(x.m)?x.m:'league',selectedPlanKey:x.q??null,fixtures:Array.isArray(x.f)?x.f:[],matchMinutes:clamp(+x.mm||10,1,120),swapMinutes:clamp(+x.sm||1,1,10),modeQueue:Array.isArray(x.mq)?x.mq:[],modeActive:Array.isArray(x.ma)?x.ma:[],modeChampion:x.mc??null,modeRoundWinners:Array.isArray(x.rw)?x.rw:[],modeRoundPlayed:Array.isArray(x.rp)?x.rp:[],modeScores:Array.isArray(x.ms)?x.ms:[],modeOpponents:Array.isArray(x.mo)?x.mo:[],modeEliminated:Array.isArray(x.me)?x.me:[],modeLadderStreak:Array.isArray(x.ml)?x.ml:[],modeRound:Number.isFinite(x.mr)?x.mr:0,modeSwissRounds:Number.isFinite(x.sw)?x.sw:0,resultLocked:!!x.rl,resultUndoStack:Array.isArray(x.ru)?x.ru.slice(-3):[]};
+}
+async function compressText(text){try{if('CompressionStream' in window){let cs;try{cs=new CompressionStream('deflate-raw')}catch(e){cs=new CompressionStream('deflate')}const w=cs.writable.getWriter();w.write(new TextEncoder().encode(text));w.close();const buf=await new Response(cs.readable).arrayBuffer();return new Uint8Array(buf)} }catch(e){}return new TextEncoder().encode(text)}
+async function decompressText(bytes){try{if('DecompressionStream' in window){let ds;try{ds=new DecompressionStream('deflate-raw')}catch(e){ds=new DecompressionStream('deflate')}const w=ds.writable.getWriter();w.write(bytes);w.close();const buf=await new Response(ds.readable).arrayBuffer();return new TextDecoder().decode(buf)}}catch(e){}return new TextDecoder().decode(bytes)}
+function bytesToBase64Url(bytes){let bin='';for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function base64UrlToBytes(str){const b64=str.replace(/-/g,'+').replace(/_/g,'/');const pad='='.repeat((4-b64.length%4)%4);const bin=atob(b64+pad);return Uint8Array.from(bin,c=>c.charCodeAt(0))}
+let lastShareCode='';
+async function makeShareCode(){try{const raw=JSON.stringify(compactShareSnapshot());const compressed=await compressText(raw);lastShareCode='MF.'+bytesToBase64Url(compressed);return lastShareCode}catch(e){return''}}
+let shareCodeTimer=null,shareCodeBusy=false;
+async function refreshShareCode(){const el=$('shareCode');if(!el||shareCodeBusy)return;shareCodeBusy=true;try{const code=await makeShareCode();if(code&&document.activeElement!==el)el.value=code}catch(e){}finally{shareCodeBusy=false}}
+function scheduleShareCode(delay=500){clearTimeout(shareCodeTimer);shareCodeTimer=setTimeout(()=>{shareCodeTimer=null;refreshShareCode()},delay)}
+async function parseShareCode(raw){const code=String(raw||'').trim().replace(/\s+/g,'');if(code.startsWith('MF63-')){const data=JSON.parse(base64UrlToUtf8(code.slice(5).replace(/-/g,'')));if(!data||data.format!==1||data.app!==63)throw new Error('Geçersiz eski kod');return data}if(!/^MF\.[A-Za-z0-9_-]+$/.test(code))throw new Error('Geçersiz MatchFlow kodu');const rawText=await decompressText(base64UrlToBytes(code.slice(3)));return expandCompactShare(JSON.parse(rawText))}
+async function applyShareData(x){resetting=false;clearTimeout(autoSaveTimer);autoSaveTimer=null;clearTimeout(shareCodeTimer);shareCodeTimer=null;clearInterval(timer);timer=null;timerEndAt=0;goldGoalActive=false;goldGoalGame=-1;people=clamp(+x.people||20,4,56);sessionMinutes=clamp(+x.sessionMinutes||60,5,120);teamCount=Math.max(2,Math.min(10,+x.teamCount||4));players=Array.isArray(x.players)?x.players.map(p=>({name:String(p?.name||''),score:clamp(+p?.score||3,1,5),abi:!!p?.abi})):[];generatedTeams=Array.isArray(x.generatedTeams)?JSON.parse(JSON.stringify(x.generatedTeams)):[];results=Array.isArray(x.results)?x.results.map(v=>+v||0):[];teamNames=Array.isArray(x.teamNames)?x.teamNames.map(v=>String(v||'')):[];teamLocks=Array.isArray(x.teamLocks)?x.teamLocks.map(Boolean):[];playMode=['league','knockout','ladder','swiss'].includes(x.playMode)?x.playMode:'league';selectedPlanKey=x.selectedPlanKey??null;openTeamOptions=null;fixtures=Array.isArray(x.fixtures)?JSON.parse(JSON.stringify(x.fixtures)):[];modeQueue=Array.isArray(x.modeQueue)?x.modeQueue:[];modeActive=Array.isArray(x.modeActive)?x.modeActive:[];modeChampion=x.modeChampion??null;modeRoundWinners=Array.isArray(x.modeRoundWinners)?x.modeRoundWinners:[];modeRoundPlayed=Array.isArray(x.modeRoundPlayed)?x.modeRoundPlayed:[];modeScores=Array.isArray(x.modeScores)?x.modeScores:[];modeOpponents=Array.isArray(x.modeOpponents)?x.modeOpponents:[];modeEliminated=Array.isArray(x.modeEliminated)?x.modeEliminated:[];modeLadderStreak=Array.isArray(x.modeLadderStreak)?x.modeLadderStreak:[];modeRound=Number.isFinite(x.modeRound)?x.modeRound:0;modeSwissRounds=Number.isFinite(x.modeSwissRounds)?x.modeSwissRounds:0;resultLocked=!!x.resultLocked;resultUndoStack=Array.isArray(x.resultUndoStack)?x.resultUndoStack.slice(-3):[];$('peopleValue').textContent=people;$('sessionValue').textContent=sessionMinutes;$('teamValue').textContent=teamCount;$('matchValue').textContent=clamp(+x.matchMinutes||10,1,120);$('swapValue').textContent=clamp(+x.swapMinutes||1,1,10);manualTimer=false;timerPhase='ready';remaining=+$('matchValue').textContent*60;timerEndAt=0;renderNames();renderPlayers();renderModePicker();renderRecommend();if(generatedTeams.length){renderTeams();renderFixtures();renderRanking()}else{autoPlan();renderFixtures();renderRanking()}syncClock();switchPage(1);saveAppState();await refreshShareCode()}
+async function copyShareCode(){const el=$('shareCode');const code=el?.value||lastShareCode||await makeShareCode();if(!code)return;try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(code);else{el.focus();el.select();document.execCommand('copy')}}catch(e){try{el.focus();el.select();document.execCommand('copy')}catch(_){} }$('shareStatus').textContent='Kopyalandı.';playUiSound('saved')}
+async function pasteShareCode(){const el=$('shareCode');let raw='';try{if(navigator.clipboard?.readText)raw=await navigator.clipboard.readText()}catch(e){}if(!raw){el?.focus();return}try{const data=await parseShareCode(raw);await applyShareData(data);$('shareStatus').textContent='Aktarıldı.';playUiSound('saved')}catch(e){$('shareStatus').textContent=e?.message||'Kod okunamadı.'}}
+$('copyShareCode').onclick=copyShareCode;$('pasteShareCode').onclick=pasteShareCode;$('shareCode').addEventListener('change',async()=>{try{const data=await parseShareCode($('shareCode').value);await applyShareData(data);$('shareStatus').textContent='Aktarıldı.'}catch(e){}});
+function saveAppState(){
+  const st=safeStorage(); if(!st)return false;
+  try{
+    const serialized=JSON.stringify({
+      version:69,people,sessionMinutes,teamCount,players,generatedTeams,results,teamNames,teamLocks,
+      playMode,selectedPlanKey,openTeamOptions,fixtures,remaining,manualTimer,
+      matchMinutes:+$('matchValue').textContent,swapMinutes:+$('swapValue').textContent,timerPhase,goldGoalActive,goldGoalGame,timerEndAt,
+      page:$('page2')?.classList.contains('active')?2:$('page3')?.classList.contains('active')?3:1,
+      modeQueue,modeActive,modeChampion,modeRoundWinners,modeRoundPlayed,modeScores,modeOpponents,modeEliminated,modeLadderStreak,modeRound,modeSwissRounds,
+      resultLocked,resultUndoStack,profileName,deviceChoice
+    });
+    st.setItem(STORAGE_KEY,serialized);
+    mirrorToIndexedDB(serialized);
+    requestPersistentStorage();
+    scheduleShareCode();
+    return true;
+  }catch(e){return false;}
+}
+function loadAppState(){
+  const st=safeStorage(); if(!st)return false;
+  try{
+    let raw=st.getItem(STORAGE_KEY);
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V65); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V63); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V62); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V60); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V59); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V58); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_V56); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_OLD); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_OLD2); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_OLD3); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_OLD4); }
+    if(!raw){ raw=st.getItem(LEGACY_STORAGE_KEY_OLD5); }
+    if(!raw)return false;
+    const x=JSON.parse(raw); if(!x||![41,43,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67].includes(x.version))return false;
+    if(Number.isFinite(x.people))people=clamp(+x.people,4,56);
+    if(Number.isFinite(x.sessionMinutes))sessionMinutes=clamp(+x.sessionMinutes,5,120);
+    if(Number.isFinite(x.teamCount))teamCount=Math.max(2,Math.min(10,+x.teamCount));
+    if(Array.isArray(x.players))players=x.players.map(p=>({name:String(p?.name||''),score:clamp(+p?.score||3,1,5),abi:!!p?.abi}));
+    if(Array.isArray(x.generatedTeams))generatedTeams=x.generatedTeams;
+    if(Array.isArray(x.results))results=x.results.map(v=>+v||0);
+    if(Array.isArray(x.teamNames))teamNames=x.teamNames.map(v=>String(v||''));
+    if(Array.isArray(x.teamLocks))teamLocks=x.teamLocks.map(Boolean);
+    if(['league','knockout','ladder','swiss'].includes(x.playMode))playMode=x.playMode;
+    if(x.selectedPlanKey!=null)selectedPlanKey=x.selectedPlanKey;
+    if(x.openTeamOptions!=null)openTeamOptions=x.openTeamOptions;
+    if(Array.isArray(x.fixtures))fixtures=x.fixtures;
+    if(Number.isFinite(x.remaining))remaining=Math.max(0,+x.remaining);
+    manualTimer=!!x.manualTimer;
+    timerPhase=['ready','match','swap','gold'].includes(x.timerPhase)?x.timerPhase:'ready';
+    goldGoalActive=!!x.goldGoalActive; goldGoalGame=Number.isInteger(x.goldGoalGame)?x.goldGoalGame:-1; timerEndAt=Number.isFinite(x.timerEndAt)?+x.timerEndAt:0;
+    modeQueue=Array.isArray(x.modeQueue)?x.modeQueue:[]; modeActive=Array.isArray(x.modeActive)?x.modeActive:[];
+    modeChampion=x.modeChampion??null; modeRoundWinners=Array.isArray(x.modeRoundWinners)?x.modeRoundWinners:[]; modeRoundPlayed=Array.isArray(x.modeRoundPlayed)?x.modeRoundPlayed:[];
+    modeScores=Array.isArray(x.modeScores)?x.modeScores:[]; modeOpponents=Array.isArray(x.modeOpponents)?x.modeOpponents:[]; modeEliminated=Array.isArray(x.modeEliminated)?x.modeEliminated:[]; modeLadderStreak=Array.isArray(x.modeLadderStreak)?x.modeLadderStreak:[]; modeRound=Number.isFinite(x.modeRound)?x.modeRound:0; modeSwissRounds=Number.isFinite(x.modeSwissRounds)?x.modeSwissRounds:0;
+    resultLocked=!!x.resultLocked;
+    if(x.profileName)profileName=String(x.profileName); if(['apple','android','computer'].includes(x.deviceChoice))deviceChoice=x.deviceChoice;
+    resultUndoStack=Array.isArray(x.resultUndoStack)?x.resultUndoStack.slice(-3).map(s=>{try{return JSON.parse(JSON.stringify(s))}catch(e){return null}}).filter(Boolean):[];
+    $('peopleValue').textContent=people; $('sessionValue').textContent=sessionMinutes; $('teamValue').textContent=teamCount;
+    if(Number.isFinite(x.matchMinutes))$('matchValue').textContent=clamp(+x.matchMinutes,1,120);
+    if(Number.isFinite(x.swapMinutes))$('swapValue').textContent=clamp(+x.swapMinutes,1,10);
+    renderNames();renderPlayers();renderModePicker();renderRecommend();
+    if(generatedTeams.length){renderTeams();renderFixtures();renderRanking();}
+    else {autoPlan();renderFixtures();renderRanking();}
+    syncClock();
+    if((timerPhase==='match'||timerPhase==='swap') && timerEndAt>0) runTimerPhase();
+    switchPage([1,2,3].includes(x.page)?x.page:1);
+    return true;
+  }catch(e){return false}
+}
+function clearAllData(){
+  resetting=true;
+  clearTimeout(autoSaveTimer);autoSaveTimer=null;
+  const st=safeStorage();
+  try{
+    if(st){
+      [STORAGE_KEY,LEGACY_STORAGE_KEY_V63,LEGACY_STORAGE_KEY_V62,LEGACY_STORAGE_KEY,LEGACY_STORAGE_KEY_V60,LEGACY_STORAGE_KEY_V58,LEGACY_STORAGE_KEY_V56,LEGACY_STORAGE_KEY_OLD,LEGACY_STORAGE_KEY_OLD2,LEGACY_STORAGE_KEY_OLD3,LEGACY_STORAGE_KEY_OLD4,LEGACY_STORAGE_KEY_OLD5,
+       'matchflow_state_v66','matchflow_state_v61','matchflow_state_v58','matchflow_state_v57','matchflow_state_v56','matchflow_state_v55','matchflow_state_v54','matchflow_state_v53','matchflow_state_v52','matchflow_state_v51','matchflow_state_v50','matchflow_state_v49','matchflow_state_v48','matchflow_state_v47'].forEach(k=>{try{st.removeItem(k)}catch(e){}});
+    }
+  }catch(e){}
+  try{sessionStorage.clear()}catch(e){}
+  try{st?.removeItem(PROFILE_KEY)}catch(e){}
+  profileName='';deviceChoice='';
+  clearInterval(timer);timer=null;
+  timerEndAt=0;goldGoalActive=false;goldGoalGame=-1;remaining=0;timerPhase='ready';manualTimer=false;
+  people=20;sessionMinutes=60;teamCount=4;players=[];generatedTeams=[];results=[];teamNames=[];teamLocks=[];fixtures=[];
+  selectedPlanKey=null;openTeamOptions=null;modeQueue=[];modeActive=[];modeChampion=null;modeRoundWinners=[];modeRoundPlayed=[];modeScores=[];modeOpponents=[];modeEliminated=[];modeLadderStreak=[];modeRound=0;modeSwissRounds=0;
+  resultLocked=false;resultUndoStack=[];switchPage(1);
+  $('peopleValue').textContent=people;$('sessionValue').textContent=sessionMinutes;$('teamValue').textContent=teamCount;
+  $('matchValue').textContent=10;$('swapValue').textContent=1;
+  renderNames();ensurePlayers(people);renderModePicker();renderRecommend();autoPlan();renderFixtures();renderRanking();syncClock();
+  // Sıfırlanmış başlangıç durumu tekrar kaydedilir. Eski veri anahtarları yukarıda temizlendi.
+  saveAppState();
+  $('confirmOverlay').classList.remove('show');
+  resetting=false;
+  showDeviceSetup();
+}
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+
+function currentSwapMinutes(){
+  const el=$('swapValue');
+  const v=el?+el.textContent:1;
+  return clamp(Number.isFinite(v)?v:1,1,10);
+}
+function getPlans(n, forcedTeam=null){
+  const out=[], teams=forcedTeam||teamCount;
+  const base=Math.floor(n/teams),rem=n%teams,max=base+(rem?1:0);
+  if(teams<2 || teams>10 || base<2 || max>7)return out;
+
+  const swap=currentSwapMinutes();
+  // Bunlar kullanıcıya gösterilecek referans sürelerdir. Ana hedef daha çok maç;
+  // süre uzadıkça maç sayısı azalır. 120 dakika da ayrı bir seçenek olabilir.
+  const durations=[5,6,7,8,10,12,15,20,30,45,60,90,120];
+  const mode=playMode||'league';
+  const distributions=[];
+  const add=(arr,match)=>{
+    if(arr.some(x=>x<1))return;
+    const total=arr.reduce((a,b)=>a+b,0);
+    if(total%2)return;
+    const games=total/2;
+    const cycle=match+swap;
+    if(games<1 || games*cycle>sessionMinutes)return;
+    const key=arr.join(',')+'|'+match;
+    if(!distributions.some(x=>x.key===key))distributions.push({arr:arr.slice(),match,key});
+  };
+
+  // Her maçta iki takım oynar. Dağılım doğrudan gerçek maç süresi + değişim
+  // süresine göre hesaplanır; böylece program toplam süreyi aşamaz.
+  for(const match of durations){
+    const maxGames=Math.floor(sessionMinutes/(match+swap));
+    if(maxGames<1)continue;
+    // Eşit dağılım için mümkün olan en yüksek uygun maç sayısından başlayalım.
+    for(let k=Math.max(1,maxGames-2);k<=maxGames;k++){
+      add(Array(teams).fill(k),match);
+      if(teams>=3){
+        const a=Array(teams).fill(k);
+        a[0]=Math.max(1,k-1); a[teams-1]=k+1;
+        add(a.sort((x,y)=>x-y),match);
+      }
+    }
+  }
+
+  for(const item of distributions){
+    const distribution=item.arr, match=item.match;
+    const games=distribution.reduce((a,b)=>a+b,0)/2;
+    const spread=Math.max(...distribution)-Math.min(...distribution);
+    const used=games*(match+swap);
+    const buffer=Math.max(0,sessionMinutes-used);
+    let modePenalty=0;
+    if(mode==='ladder') modePenalty=Math.abs(match-8)*0.7-games*0.15;
+    if(mode==='league') modePenalty=Math.abs(match-10)*0.35;
+    if(mode==='swiss') modePenalty=Math.abs(match-12)*0.3;
+    if(mode==='knockout') modePenalty=Math.abs(match-15)*0.25+Math.max(0,games-8)*0.08;
+    out.push({
+      t:teams,
+      sizes:Array.from({length:teams},(_,i)=>base+(i<rem?1:0)),
+      games,match,change:swap,buffer,used,
+      perTeam:spread===0?String(distribution[0]):`${distribution[0]}-${distribution[distribution.length-1]}`,
+      minPerTeam:Math.min(...distribution),maxPerTeam:Math.max(...distribution),spread,
+      distribution:[...distribution],modePenalty,
+      key:`${teams}-${match}-${swap}-${distribution.join('.')}-${mode}`
+    });
+  }
+
+  // Ana öncelik: mümkün olduğunca çok maç. Eşitlikte dağılım ve süre dengesi.
+  out.sort((a,b)=>b.games-a.games||a.spread-b.spread||a.modePenalty-b.modePenalty||a.match-b.match);
+  const unique=[],seen=new Set();
+  for(const x of out){
+    const bucket=x.games+'|'+x.distribution.join(',')+'|'+x.match+'|'+x.change;
+    if(seen.has(bucket))continue;
+    seen.add(bucket);unique.push(x);
+  }
+  // Kullanıcıya tek tip öneriler göstermek yerine, 15'e kadar seçeneği
+  // sıralı kalite listesinin farklı noktalarından örnekleyerek çeşitlendir.
+  // Her seçenek yine gerçek toplam süre ve takım-maç hesabından gelir.
+  if(unique.length>15){
+    const varied=[];
+    for(let i=0;i<15;i++){
+      const idx=Math.round(i*(unique.length-1)/14);
+      if(!varied.some(x=>x.key===unique[idx].key))varied.push(unique[idx]);
+    }
+    return varied;
+  }
+  return unique;
+}
+
+function buildStrategyReferences(){
+  const swap=currentSwapMinutes();
+  const durations=[5,6,7,8,10,12,15,20,30,45,60];
+  const labels=[
+    'ÇOK MAÇ', 'MAÇ ODAKLI', 'HIZLI TUR', 'KISA VE DENGELİ', 'DENGELİ-KISA',
+    'DENGELİ', 'DENGELİ-UZUN', 'UZUN MAÇ', 'AZ MAÇ', 'ÇOK UZUN', 'MAKSİMUM SÜRE'
+  ];
+  return durations.map((match,i)=>{
+    const games=Math.floor(sessionMinutes/(match+swap));
+    const avg=teamCount?((games*2)/teamCount):0;
+    const used=games*(match+swap), left=Math.max(0,sessionMinutes-used);
+    return {i,match,games,avg,used,left,cycle:match+swap,label:labels[i]};
+  }).filter(x=>x.games>=1);
+}
+
+function autoPlan(){
+  let p=getPlans(people,teamCount);
+  if(!p.length){
+    const counts=[];
+    for(let t=2;t<=Math.min(10,people);t++){
+      if(getPlans(people,t).length)counts.push(t);
+    }
+    if(!counts.length)return;
+    teamCount=counts[0];
+    p=getPlans(people,teamCount);
+  }
+  renderRecommend();
+}
+let openTeamOptions=null;
+let selectedPlanKey=null;
+
+function planKey(p){return p.key}
+
+function renderRecommend(){
+  const blocks=[];
+  const visible=new Set([2,3,4,5,6,7,8,9,10]);
+  if(teamCount>=2&&teamCount<=10)visible.add(teamCount);
+  for(const t of [...visible].sort((a,b)=>a-b)){
+    if(t<2||t>10||t>people) continue;
+    const base=Math.floor(people/t),rem=people%t,max=base+(rem?1:0);
+    if(base<2||max>7)continue;
+    const open=openTeamOptions===t, plans=getPlans(people,t);
+    const selected=selectedPlanKey&&plans.find(p=>p.key===selectedPlanKey);
+    blocks.push(`<div class="optionWrap">
+      <button class="teamChoice ${open?'open':''}" data-team-open="${t}">
+        <span><b>${t} TAKIM</b> <span class="small">• ${Array.from({length:t},(_,i)=>base+(i<rem?1:0)).join(' - ')} KİŞİ</span></span>
+        <span class="chev">${open?'▲':'▼'}</span>
+      </button>
+      ${selected&&!open?`<div class="selectedPlan"><span><strong>${selected.match} DK MAÇ</strong> • ${selected.games} TOPLAM MAÇ • ${selected.spread===0?`HER TAKIM ${selected.distribution[0]} MAÇ`:`DAĞILIM ${selected.distribution.join(' - ')}`} • EKSTRA SÜRE ${selected.buffer} DK</span><button data-clear-plan="${t}">×</button></div>`:''}
+      <div class="planOptions ${open?'open':''}">
+        ${plans.map(p=>`<button class="planMini ${planKey(p)===selectedPlanKey?'selected':''}" data-plan-key="${p.key}">
+          <b>${p.match} DK MAÇ</b><span class="meta">MAÇ SAYISI ${p.spread===0?`HER TAKIM ${p.distribution[0]}`:`${p.distribution.join(' - ')}`} • TOPLAM MAÇ ${p.games} • EKSTRA SÜRE ${p.buffer} DK</span>
+        </button>`).join('')}
+      </div>
+    </div>`);
+  }
+
+  $('recommend').innerHTML=`<h2>TAKIM SAYISI VE MAÇ PROGRAMI</h2><div class="small" style="margin-bottom:8px">2–10 takım arasından seç. Her öneride takım başına düşen oyuncu sayısı, maç süresi, toplam maç adedi, takım başına maç sayısı ve kullanılmayan/ekstra süre birlikte hesaplanır. Öneriler; çok maç, uzun maç ve daha dengeli maç dağılımı gibi farklı tercihler sunar. Toplam süreyi aşan seçenekler gösterilmez.</div><div class="reco">${blocks.join('')}</div>`;
+  $('teamValue').textContent=teamCount;
+}
+$('recommend').addEventListener('click',e=>{
+  const team=e.target.closest('[data-team-open]');
+  if(team){
+    const t=+team.dataset.teamOpen;
+    openTeamOptions=openTeamOptions===t?null:t;
+    renderRecommend();
+    return;
+  }
+  const clear=e.target.closest('[data-clear-plan]');
+  if(clear){
+    selectedPlanKey=null;openTeamOptions=+clear.dataset.clearPlan;renderRecommend();return;
+  }
+  const plan=e.target.closest('[data-plan-key]');
+  if(plan){
+    const key=plan.dataset.planKey;
+    const t=+key.split('-')[0];
+    const chosen=getPlans(people,t).find(x=>x.key===key);
+    if(!chosen)return;
+    teamCount=t;selectedPlanKey=key;openTeamOptions=null;
+    $('teamValue').textContent=t;renderNames();
+    $('matchValue').textContent=clamp(chosen.match,1,120);$('swapValue').textContent=clamp(chosen.change,1,10);
+    remaining=chosen.match*60;manualTimer=false;timerPhase='ready';syncClock();renderRecommend();ensurePlayers(people);
+  }
+});
+function autoSetMatch(m){
+  manualTimer=false;
+  $('matchValue').textContent=clamp(m,1,120);
+  remaining=m*60;
+  timerPhase='ready';
+  syncClock();
+}
+function setSessionMinutes(n){
+  sessionMinutes=clamp(n,5,120);
+  $('sessionValue').textContent=sessionMinutes;
+  autoPlan();
+  renderRecommend();
+  const p=getPlans(people,teamCount)[0];
+  if(p){ $('sessionValue').textContent=sessionMinutes; updateSessionInfo(p); }
+  saveAppState();
+}
+$('sessionMinus').onclick=()=>setSessionMinutes(sessionMinutes-1);
+$('sessionPlus').onclick=()=>setSessionMinutes(sessionMinutes+1);
+bindHold('sessionMinus',()=>setSessionMinutes(sessionMinutes-1));
+bindHold('sessionPlus',()=>setSessionMinutes(sessionMinutes+1));
+
+function setPeople(n){
+  people=clamp(n,4,56);
+  $('peopleValue').textContent=people;
+  $('sessionValue').textContent=sessionMinutes;
+  autoPlan();
+  $('teamValue').textContent=teamCount;
+  renderNames();ensurePlayers(people);renderRecommend();
+  saveAppState();
+}
+$('peopleMinus').onclick=()=>setPeople(people-1);
+$('peoplePlus').onclick=()=>setPeople(people+1);
+bindHold('peopleMinus',()=>setPeople(people-1));
+bindHold('peoplePlus',()=>setPeople(people+1));
+
+function validTeamCounts(){
+  const valid=[];
+  for(let t=2;t<=Math.min(10,people);t++){
+    const base=Math.floor(people/t),rem=people%t,max=base+(rem?1:0);
+    if(base<2||max>7)continue;
+    if(getPlans(people,t).length)valid.push(t);
+  }
+  return valid;
+}
+function setTeams(n){
+  const valid=validTeamCounts();
+  if(!valid.length)return;
+  let idx=valid.indexOf(teamCount);
+  if(idx<0)idx=n>teamCount? -1 : valid.length;
+  const next=valid[clamp(idx+(n>teamCount?1:-1),0,valid.length-1)];
+  if(next===undefined)return;
+  teamCount=next;selectedPlanKey=null;openTeamOptions=teamCount;
+  $('teamValue').textContent=teamCount;renderNames();renderRecommend();
+  saveAppState();
+}
+$('teamMinus').onclick=()=>setTeams(teamCount-1);
+$('teamPlus').onclick=()=>setTeams(teamCount+1);
+bindHold('teamMinus',()=>setTeams(teamCount-1));
+bindHold('teamPlus',()=>setTeams(teamCount+1));
+
+function renderNames(){
+  if(teamNames.length!==teamCount){
+    const old=[...teamNames];
+    teamNames=Array.from({length:teamCount},(_,i)=>old[i]||'');
+    teamLocks=Array.from({length:teamCount},(_,i)=>!!teamLocks[i]);
+  }
+  $('names').innerHTML=Array.from({length:teamCount},(_,i)=>`<input data-team-name="${i}" value="${esc(teamNames[i]||'')}" placeholder="TAKIM ${i+1}" ${teamLocks[i]?'disabled':''}>`).join('');
+}
+$('names').addEventListener('input',e=>{
+  const input=e.target;
+  if(input?.dataset?.teamName!==undefined){
+    const i=+input.dataset.teamName;
+    if(teamLocks[i])return;
+    const value=input.value.toUpperCase();
+    if(input.value!==value){const a=input.selectionStart,b=input.selectionEnd;input.value=value;try{input.setSelectionRange(a,b)}catch(_){} }
+    teamNames[i]=value;
+    const live=$('teams')?.querySelector(`[data-live-team-name="${i}"]`);
+    if(live && document.activeElement!==live)live.value=value;
+    saveAppState();scheduleShareCode();
+  }
+});
+$('names').addEventListener('focus',e=>{
+  const input=e.target;if(input?.dataset?.teamName!==undefined && !input.value)input.placeholder='';
+},true);
+$('names').addEventListener('blur',e=>{
+  const input=e.target;if(input?.dataset?.teamName!==undefined && !input.value)input.placeholder=`TAKIM ${+input.dataset.teamName+1}`;
+},true);
+
+function ensurePlayers(n){
+  while(players.length<n)players.push({name:'',score:3,abi:false});
+  if(players.length>n)players=players.slice(0,n);
+  renderPlayers();
+}
+function renderPlayers(){
+  $('players').innerHTML=players.map((p,i)=>`<div class="player">
+    <div class="phead"><span class="pname">${esc((p.name||`OYUNCU ${i+1}`)).toUpperCase()}</span><input data-name="${i}" value="${esc(p.name||'')}" placeholder="OYUNCU ${i+1}"></div>
+    <div class="levels">${levelNames.map((x,j)=>`<button class="${p.score===j+1?'on':''}" data-level="${i}" data-score="${j+1}">${x}</button>`).join("")}</div>
+    <button class="abi ${p.abi?'on':''}" data-abi="${i}">${p.abi?'👑 ABI':'ABI'}</button>
+  </div>`).join("");
+}
+$('players').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.level){const i=+b.dataset.level;players[i].score=+b.dataset.score;b.closest('.levels').querySelectorAll('[data-score]').forEach(x=>x.classList.toggle('on',+x.dataset.score===players[i].score));}
+  if(b.dataset.abi){const i=+b.dataset.abi;players[i].abi=!players[i].abi;b.classList.toggle('on',players[i].abi);b.textContent=players[i].abi?'👑 ABI':'ABI';}
+  saveAppState();
+});
+$('players').addEventListener('input',e=>{
+  const input=e.target.closest('input[data-name]');
+  if(!input)return;
+  const i=+input.dataset.name;
+  players[i].name=input.value.toUpperCase();
+  input.value=players[i].name;
+  const label=input.closest('.player')?.querySelector('.pname');
+  if(label)label.textContent=players[i].name;
+  saveAppState();
+});
+$('players').addEventListener('focus',e=>{
+  const input=e.target.closest('input[data-name]');
+  if(input)input.placeholder="";
+},true);
+$('players').addEventListener('blur',e=>{
+  const input=e.target.closest('input[data-name]');
+  if(input&&!input.value)input.placeholder=`OYUNCU ${+input.dataset.name+1}`;
+},true);
+
+// Mobil ve masaüstünde input ile buton etkileşimini ortak bırak; pointerdown üzerinde preventDefault kullanılmaz.
+$('add').onclick=()=>{playUiSound('add');setPeople(people+1)};
+
+function sum(a){return a.reduce((s,p)=>s+p.score,0)}
+function generate(){
+  const n=players.length,t=teamCount;
+  teamNames=Array.from({length:t},(_,i)=>(teamNames[i]||'').trim().toUpperCase());
+  teamLocks=Array.from({length:t},(_,i)=>!!teamLocks[i]);
+  renderNames();
+  const sizes=Array.from({length:t},(_,i)=>Math.floor(n/t)+(i<n%t?1:0));
+  let best=null,bestCost=Infinity;
+  for(let trial=0;trial<4500;trial++){
+    let order=[...players].sort(()=>Math.random()-.5);
+    const abis=order.filter(p=>p.abi);
+    const teams=Array.from({length:t},()=>[]);
+    // ABI önceliği: yeterli ABI varsa önce her takıma kesin olarak bir ABI ver.
+    // Sonra kalan ABI'ler ve normal oyuncular seviye dengesine göre dağıtılır.
+    if(abis.length>=t){
+      const aSorted=[...abis].sort((a,b)=>b.score-a.score || String(a.name||'').localeCompare(String(b.name||'')));
+      // Güçlü/zayıf ABI'leri sırayla farklı takımlara vererek başlangıç dengesini koru.
+      const seed=[];
+      for(let i=0;i<aSorted.length && i<t;i+=2)seed.push(aSorted[i]);
+      for(let i=1;i<aSorted.length && seed.length<t;i+=2)seed.push(aSorted[i]);
+      for(let k=0;k<t;k++) teams[k].push(seed[k]);
+      const used=new Set(seed);
+      order=order.filter(p=>!used.has(p));
+    }
+    for(const p of order){
+      const c=teams.map((x,k)=>({x,k})).filter(o=>o.x.length<sizes[o.k]).sort((a,b)=>sum(a.x)-sum(b.x));
+      c[Math.floor(Math.random()*Math.min(2,c.length))].x.push(p);
+    }
+    const totals=teams.map(sum),avgs=teams.map((x,i)=>totals[i]/x.length),mean=totals.reduce((a,b)=>a+b,0)/t;
+    let cost=totals.reduce((s,x)=>s+(x-mean)**2,0)*30+(Math.max(...totals)-Math.min(...totals))*45+(Math.max(...avgs)-Math.min(...avgs))*35;
+    // If team sizes differ, the larger team should normally carry a slightly
+    // lower average skill. This keeps headcount advantage from becoming a
+    // second advantage on the pitch.
+    const meanSize=sizes.reduce((a,b)=>a+b,0)/t, meanAvg=avgs.reduce((a,b)=>a+b,0)/t;
+    cost += avgs.reduce((c,v,i)=>c + Math.max(0,(sizes[i]-meanSize)*(v-meanAvg))*90,0);
+    const ac=teams.map(x=>x.filter(p=>p.abi).length);
+    if(abis.length>=t)cost+=ac.filter(x=>x===0).length*100000+ac.reduce((s,x)=>s+Math.max(0,x-1)*120,0);
+    if(cost<bestCost){bestCost=cost;best=teams.map(x=>[...x])}
+  }
+  generatedTeams=best||[];
+  renderTeams();
+  initResults();
+  switchPage(2);
+}
+$('generate').onclick=generate;
+
+function renderTeams(){
+  if(teamNames.length!==generatedTeams.length){
+    const old=[...teamNames];
+    teamNames=Array.from({length:generatedTeams.length},(_,i)=>old[i]||'');
+  }
+  teamLocks=Array.from({length:generatedTeams.length},(_,i)=>!!teamLocks[i]);
+  $('teams').innerHTML=generatedTeams.map((team,i)=>{
+    const locked=!!teamLocks[i];
+    const label=String(teamNames[i]||'').trim();
+    return `<div class="team">
+      <div class="teamtitle"><input class="teamNameLive" data-live-team-name="${i}" value="${esc(label)}" placeholder="TAKIM ${i+1}" ${locked?'disabled':''}><button class="teamLock" data-team-lock="${i}" type="button" aria-label="Takım adını ${locked?'aç':'kilitle'}">${locked?'🔒':'🔓'}</button></div>
+      ${team.map((p,pi)=>`<div class="member"><span>${p.abi?`<button class="abiBtn" data-abi-team="${i}" data-player-name="${esc(p.name||`OYUNCU ${pi+1}`)}">${esc((p.name||`OYUNCU ${pi+1}`).toUpperCase())} 👑</button>`:esc((p.name||`OYUNCU ${pi+1}`).toUpperCase())}</span><span>${p.score}★</span></div>`).join("")}
+      <div class="small" style="margin-top:7px">${team.length} oyuncu • ${sum(team)}★</div>
+    </div>`;
+  }).join("");
+}
+$('teams').addEventListener('click',e=>{
+  const lock=e.target.closest('[data-team-lock]');
+  if(lock){
+    const i=+lock.dataset.teamLock;
+    teamLocks[i]=!teamLocks[i];
+    renderTeams();renderNames();
+    saveAppState();scheduleShareCode();
+    return;
+  }
+  const b=e.target.closest('[data-abi-team]');
+  if(!b)return;
+  const i=+b.dataset.abiTeam;
+  if(teamLocks[i]){ return; }
+  const name=(b.dataset.playerName||'').trim().toUpperCase();
+  if(!name)return;
+  if(!String(teamNames[i]||'').trim()) teamNames[i]=`${name} ABİNİN TAKIMI`;
+  renderTeams();renderNames();saveAppState();scheduleShareCode();
+});
+$('teams').addEventListener('input',e=>{
+  const input=e.target;
+  if(input?.dataset?.liveTeamName!==undefined){
+    const i=+input.dataset.liveTeamName;
+    if(teamLocks[i])return;    const value=input.value.toUpperCase();
+    if(input.value!==value){const start=input.selectionStart,end=input.selectionEnd;input.value=value;try{input.setSelectionRange(start,end)}catch(_){} }
+    teamNames[i]=value;
+    // The first page and the match page read the same canonical teamNames array.
+    const first=$('names')?.querySelector(`[data-team-name="${i}"]`);
+    if(first && document.activeElement!==first)first.value=value;
+    saveAppState();
+    scheduleShareCode();
+  }
+});
+
+let fixtures=[];
+
+// PROFESYONEL MAÇ EŞLEŞTİRME
+// Round-robin / Berger mantığı:
+// - Her eşleşme en fazla bir kez gelir.
+// - Her takım programda tam olarak `perTeam` maç oynar.
+// - Mümkün olan durumlarda tüm rakipler dengeli biçimde dağıtılır.
+// - Tek sayıdaki takım sayısında matematiksel olarak eşit maç sayısı için
+//   perTeam çift olmak zorundadır; getPlans() zaten yalnızca bunu kabul eder.
+// - Eşleşmeler daha sonra tek saha için art arda aynı takımı mümkün olduğunca
+//   tekrar oynatmayacak şekilde sıralanır.
+function fullRoundRobin(n){
+  const ids=Array.from({length:n},(_,i)=>i);
+  const list=n%2===0?[...ids]:[...ids,n];
+  const rounds=[];
+  const m=list.length;
+  for(let r=0;r<m-1;r++){
+    const games=[];
+    for(let i=0;i<m/2;i++){
+      const a=list[i],b=list[m-1-i];
+      if(a<n&&b<n) games.push([a,b]);
+    }
+    rounds.push(games);
+    // Berger/circle rotation: keep first team fixed.
+    const last=list.pop();
+    list.splice(1,0,last);
+  }
+  return rounds;
+}
+
+function scheduleCost(order){
+  let cost=0;
+  for(let i=1;i<order.length;i++){
+    const prev=order[i-1],cur=order[i];
+    if(prev[0]===cur[0]||prev[0]===cur[1]||prev[1]===cur[0]||prev[1]===cur[1]) cost+=100;
+  }
+  // Mild penalty for repeatedly using the same side of the fixture.
+  for(let i=2;i<order.length;i++){
+    const t=order[i];
+    if(order[i-1][0]===t[0] || order[i-1][1]===t[1]) cost+=1;
+  }
+  return cost;
+}
+
+function orderFixtures(games){
+  const pool=games.map(x=>[...x]);
+  const out=[];
+  let last=null;
+  while(pool.length){
+    let best=-1,bestCost=Infinity;
+    for(let i=0;i<pool.length;i++){
+      const g=pool[i];
+      let c=0;
+      if(last && (last.includes(g[0])||last.includes(g[1]))) c+=1000;
+      // Look one step ahead so the next team is not unnecessarily blocked.
+      const rest=pool.filter((_,j)=>j!==i);
+      if(rest.length){
+        const nextBest=Math.min(...rest.map(x=>(last&& (g.includes(x[0])||g.includes(x[1])))?20:0));
+        c+=nextBest;
+      }
+      c+=Math.random()*0.01;
+      if(c<bestCost){bestCost=c;best=i;}
+    }
+    const g=pool.splice(best,1)[0]; out.push(g); last=g;
+  }
+  return out;
+}
+
+function buildFixtures(teams, perTeam){
+  if(teams<2 || perTeam<1) return [];
+  const full=fullRoundRobin(teams);
+  const fullGames=full.flat();
+  const target=(teams*perTeam)/2;
+  if(!Number.isInteger(target)) return [];
+
+  // Full round-robin: use every fixture exactly once.
+  if(perTeam===teams-1) return orderFixtures(fullGames);
+
+  // Even team count: each Berger round gives every team exactly one game,
+  // so taking exactly `perTeam` complete rounds preserves equal appearances.
+  if(teams%2===0){
+    return orderFixtures(full.slice(0,perTeam).flat());
+  }
+
+  // Odd team count: a partial round cannot keep everyone equal. Construct a
+  // regular graph using cyclic distances. Each chosen distance contributes
+  // degree 2, so perTeam must be even (guaranteed by getPlans()).
+  const need=perTeam/2;
+  const chosen=[];
+  const seen=new Set();
+  for(let d=1;d<=Math.floor(teams/2)&&chosen.length<need;d++){
+    for(let i=0;i<teams;i++){
+      const j=(i+d)%teams;
+      const a=Math.min(i,j),b=Math.max(i,j),key=a+'-'+b;
+      if(!seen.has(key)){seen.add(key);chosen.push([a,b]);}
+    }
+  }
+  // The distance construction above has degree 2 for each selected distance.
+  // Stop exactly at the requested number of fixtures and verify all degrees.
+  const counts=Array(teams).fill(0),picked=[];
+  for(const g of chosen){
+    if(counts[g[0]]<perTeam&&counts[g[1]]<perTeam){
+      picked.push(g);counts[g[0]]++;counts[g[1]]++;
+    }
+  }
+  if(picked.length!==target || counts.some(x=>x!==perTeam)){
+    // Deterministic fallback: search the full graph for a regular subgraph.
+    const all=fullGames.map(x=>[...x]);
+    let best=[];
+    function dfs(start,cur,cnt){
+      if(cur.length===target){if(cnt.every(x=>x===perTeam)){best=cur.map(x=>[...x]);return true;}return false;}
+      for(let i=start;i<all.length;i++){
+        const [a,b]=all[i];
+        if(cnt[a]>=perTeam||cnt[b]>=perTeam)continue;
+        cnt[a]++;cnt[b]++;cur.push(all[i]);
+        if(dfs(i+1,cur,cnt))return true;
+        cur.pop();cnt[a]--;cnt[b]--;
+      }
+      return false;
+    }
+    dfs(0,[],Array(teams).fill(0));
+    return orderFixtures(best);
+  }
+  return orderFixtures(picked);
+}
+function chooseAppearanceCounts(plan){
+  if(plan.spread===0)return Array(plan.t).fill(plan.distribution[0]);
+  const low=Math.min(...plan.distribution);
+  const high=Math.max(...plan.distribution);
+  const counts=Array(plan.t).fill(low);
+  const needHigh=plan.distribution.filter(x=>x===high).length;
+
+  // Extra match appearances go to the currently weaker teams.
+  // This compensates for the additional playing load with the lower star total.
+  const strength=generatedTeams.map((team,i)=>({
+    i, total:sum(team), avg:sum(team)/Math.max(1,team.length)
+  })).sort((a,b)=>a.total-b.total||a.avg-b.avg);
+
+  for(let k=0;k<needHigh;k++) counts[strength[k%strength.length].i]=high;
+  return counts;
+}
+
+function buildFixturesForPlan(plan){
+  if(!plan)return [];
+  const counts=chooseAppearanceCounts(plan);
+  const n=plan.t;
+  if(n<2)return [];
+
+  // Build a repeated round-robin schedule. A team may meet the same opponent
+  // again when the selected program requires more matches than one round.
+  const out=[];
+  const remaining=counts.slice();
+  let safety=0;
+  while(remaining.some(x=>x>0) && safety<2000){
+    safety++;
+    const round=[];
+    const used=Array(n).fill(false);
+    const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>remaining[b]-remaining[a]);
+
+    for(const a of order){
+      if(remaining[a]<=0||used[a])continue;
+      let best=-1,bestScore=-Infinity;
+      for(const b of order){
+        if(a===b||remaining[b]<=0||used[b])continue;
+        let score=remaining[b]*10;
+        // Prefer a fresh opponent in this round; repeats are allowed across rounds.
+        if(out.some(g=>(g[0]===a&&g[1]===b)||(g[0]===b&&g[1]===a))) score-=1.5;
+        score+=Math.random()*0.01;
+        if(score>bestScore){bestScore=score;best=b;}
+      }
+      if(best>=0){
+        round.push([a,best]); used[a]=used[best]=true;
+      }
+    }
+
+    if(!round.length)break;
+    for(const [a,b] of round){
+      if(remaining[a]>0&&remaining[b]>0){out.push([a,b]);remaining[a]--;remaining[b]--;}
+    }
+  }
+
+  // If a one-match-spread target leaves an awkward remainder, finish it with
+  // the exact degree sequence using a small repeated-edge search.
+  if(remaining.some(x=>x>0)){
+    let guard=0;
+    while(remaining.some(x=>x>0)&&guard<1000){
+      guard++;
+      let a=remaining.indexOf(Math.max(...remaining));
+      if(remaining[a]<=0)break;
+      let candidates=[];
+      for(let b=0;b<n;b++) if(b!==a&&remaining[b]>0)candidates.push(b);
+      candidates.sort((x,y)=>remaining[y]-remaining[x]);
+      if(!candidates.length)break;
+      const b=candidates[0]; out.push([a,b]); remaining[a]--;remaining[b]--;
+    }
+  }
+  return orderFixtures(out);
+}
+
+function resetModeState(){
+  resultUndoStack=[];
+  const n=generatedTeams.length;
+  modeQueue=[];modeActive=[];modeChampion=null;modeRoundWinners=[];modeRoundPlayed=[]; goldGoalActive=false; goldGoalGame=-1;
+  modeScores=Array.from({length:n},()=>({w:0,d:0,l:0,pts:0}));
+  modeOpponents=Array.from({length:n},()=>[]);
+  modeEliminated=[];modeLadderStreak=Array(n).fill(0);modeRound=0;modeSwissRounds=0;
+}
+function initResults(){
+  resetModeState();
+  if(playMode==='league'){
+    const plan=(selectedPlanKey&&getPlans(people,teamCount).find(x=>x.key===selectedPlanKey))||getPlans(people,teamCount)[0];
+    fixtures=plan?buildFixturesForPlan(plan):[];
+    results=fixtures.map(()=>0);
+  }else if(playMode==='knockout'){
+    initKnockout();
+  }else if(playMode==='ladder'){
+    initLadder();
+  }else if(playMode==='swiss'){
+    initSwiss();
+  }
+  renderFixtures();renderRanking();renderModePicker();saveAppState();
+}
+function initKnockout(){
+  const ids=generatedTeams.map((_,i)=>i);
+  const shuffled=[...ids].sort(()=>Math.random()-.5);
+  const size=2**Math.ceil(Math.log2(Math.max(2,shuffled.length)));
+  while(shuffled.length<size)shuffled.push(null);
+  modeRound=1;
+  modeActive=shuffled.filter(Boolean);
+  const first=[];
+  for(let i=0;i<shuffled.length;i+=2){
+    const a=shuffled[i],b=shuffled[i+1];
+    if(a!==null&&b!==null) first.push([a,b]);
+    else if(a!==null) modeRoundWinners.push(a);
+    else if(b!==null) modeRoundWinners.push(b);
+  }
+  fixtures=first;results=fixtures.map(()=>0);
+  if(!fixtures.length) finishKnockoutRound();
+}
+function finishKnockoutRound(){
+  const winners=[...modeRoundWinners];
+  modeRoundWinners=[];
+  if(winners.length===1){
+    modeChampion=winners[0];
+    modeActive=[winners[0]];
+    fixtures=[];results=[];
+    return;
+  }
+  modeRound++;
+  const next=[];
+  for(let i=0;i+1<winners.length;i+=2)next.push([winners[i],winners[i+1]]);
+  modeActive=winners;
+  fixtures=next;results=fixtures.map(()=>0);
+}
+function initLadder(){
+  const ids=generatedTeams.map((_,i)=>i);
+  if(ids.length<2){fixtures=[];results=[];return;}
+  modeQueue=ids.slice(2);
+  fixtures=[[ids[0],ids[1]]];results=[0];modeRound=1;
+}
+function initSwiss(){
+  const n=generatedTeams.length;
+  const plan=(selectedPlanKey&&getPlans(people,teamCount).find(x=>x.key===selectedPlanKey))||getPlans(people,teamCount)[0];
+  const matches=Math.max(1,plan?.games||Math.floor(sessionMinutes/12));
+  const perRound=Math.max(1,Math.floor(n/2));
+  modeSwissRounds=Math.max(1,Math.floor(matches/perRound));
+  modeRound=1;
+  fixtures=swissPairRound([]);results=fixtures.map(()=>0);
+}
+function swissPairRound(previousFixtures){
+  const ranked=generatedTeams.map((_,i)=>({i,...modeScore(i)}))
+    .sort((a,b)=>b.pts-a.pts||b.w-a.w||b.d-a.d||a.i-b.i);
+  const used=new Set(),next=[];
+  for(const r of ranked){
+    if(used.has(r.i))continue;
+    const candidates=ranked.filter(x=>!used.has(x.i)&&x.i!==r.i).sort((a,b)=>{
+      const pa=Math.abs(a.pts-r.pts),pb=Math.abs(b.pts-r.pts);
+      const ra=modeOpponents[r.i]?.includes(a.i)?1:0,rb=modeOpponents[r.i]?.includes(b.i)?1:0;
+      return pa-pb||ra-rb||b.w-a.w;
+    });
+    const c=candidates[0];
+    if(c){next.push([r.i,c.i]);used.add(r.i);used.add(c.i);}
+  }
+  // Tek sayıda takım varsa biri o tur bay geçer; kalan takımlar yine eşleşir.
+  return next;
+}
+function modeScore(i){
+  const x=modeScores[i]||{w:0,d:0,l:0,pts:0};
+  return {w:x.w||0,d:x.d||0,l:x.l||0,pts:x.pts||0};
+}
+function addModeResult(a,b,v){
+  if(a==null||b==null)return;
+  modeOpponents[a]=modeOpponents[a]||[];modeOpponents[b]=modeOpponents[b]||[];
+  if(!modeOpponents[a].includes(b))modeOpponents[a].push(b);
+  if(!modeOpponents[b].includes(a))modeOpponents[b].push(a);
+  modeScores[a]=modeScores[a]||{w:0,d:0,l:0,pts:0};modeScores[b]=modeScores[b]||{w:0,d:0,l:0,pts:0};
+  if(v===1){modeScores[a].w++;modeScores[a].pts+=2;modeScores[b].l++;}
+  if(v===2){modeScores[a].d++;modeScores[a].pts++;modeScores[b].d++;modeScores[b].pts++;}
+  if(v===3){modeScores[b].w++;modeScores[b].pts+=2;modeScores[a].l++;}
+}
+function renderModePicker(){
+  const box=$('modePicker');
+  if(!box)return;
+  const modes=[
+    ['league','🏆 KLASİK LİG','Herkes herkesle kapışır. Maçlar önceden belirlenen programa göre oynanır. Galibiyet 2, beraberlik 1, mağlubiyet 0 puan getirir. Maçlar bitince puanı en yüksek takım birinci olur.'],
+    ['knockout','⚔️ ELEME','Her maç önemli. Kaybeden elenir, kazanan tur atlar. Turlar ilerledikçe rakipler azalır ve finale kalan takım şampiyon olur.'],
+    ['ladder','🔥 MERDİVEN','Kazanan sahada kalır, kaybeden yerini sıradaki takıma bırakır. Her galibiyet seni merdivende biraz daha yukarı taşır ve yeni bir rakip karşına çıkar. Kazandıkça yerini korursun, kaybettiğinde ise tacını rakibine bırakırsın.'],
+    ['swiss','🇨🇭 İSVİÇRE KAOSU','Puanları yakın olan takımlar birbirleriyle eşleşir. Her turda rakipler yeniden belirlenir. Bir maç kaybetsen bile elenmezsin, toparlanıp yarışa devam edersin. Aynı takımla arka arkaya eşleşmemen için rakip dağılımı her tur yeniden dengelenir.']
+  ];
+  box.innerHTML=modes.map(m=>`<button class="modeBtn ${playMode===m[0]?'active':''}" data-mode="${m[0]}"><b>${m[1]}</b><span>${m[2]}</span></button>`).join('');
+}
+function setPlayMode(mode){
+  if(!['league','knockout','ladder','swiss'].includes(mode))return;
+  playMode=mode;
+  selectedPlanKey=null;
+  openTeamOptions=null;
+  renderModePicker();
+  renderRecommend();
+  if(generatedTeams.length){ initResults(); return; }
+  const p=getPlans(people,teamCount)[0];
+  if(p){ $('matchValue').textContent=clamp(p.match,1,120); $('swapValue').textContent=clamp(p.change,1,10); remaining=p.match*60; manualTimer=false; timerPhase='ready'; syncClock(); }
+  saveAppState();
+}
+$('modePicker')?.addEventListener('click',e=>{
+  const b=e.target.closest('[data-mode]');if(b)setPlayMode(b.dataset.mode);
+});
+
+
+function resultState(v){return v===1?'win':v===2?'draw':v===3?'loss':''}
+function isDecisionMode(){return playMode==='knockout'||playMode==='ladder'}
+function cloneModeState(){
+  return {
+    fixtures:JSON.parse(JSON.stringify(fixtures)),results:[...results],modeQueue:[...modeQueue],modeActive:[...modeActive],
+    modeChampion,modeRoundWinners:[...modeRoundWinners],modeRoundPlayed:JSON.parse(JSON.stringify(modeRoundPlayed)),
+    modeScores:JSON.parse(JSON.stringify(modeScores)),modeOpponents:JSON.parse(JSON.stringify(modeOpponents)),
+    modeEliminated:[...modeEliminated],modeLadderStreak:[...modeLadderStreak],modeRound,modeSwissRounds,
+    goldGoalActive,goldGoalGame,timerPhase,remaining,timerEndAt
+  };
+}
+function saveResultUndoSnapshot(){
+  resultUndoStack.push(cloneModeState());
+  if(resultUndoStack.length>3) resultUndoStack.shift();
+}
+function restoreResultUndoSnapshot(){
+  if(!resultUndoStack.length)return;
+  clearInterval(timer);timer=null;
+  const x=resultUndoStack.pop();
+  fixtures=JSON.parse(JSON.stringify(x.fixtures)); results=[...x.results]; modeQueue=[...x.modeQueue]; modeActive=[...x.modeActive];
+  modeChampion=x.modeChampion; modeRoundWinners=[...x.modeRoundWinners]; modeRoundPlayed=JSON.parse(JSON.stringify(x.modeRoundPlayed));
+  modeScores=JSON.parse(JSON.stringify(x.modeScores)); modeOpponents=JSON.parse(JSON.stringify(x.modeOpponents));
+  modeEliminated=[...x.modeEliminated]; modeLadderStreak=[...x.modeLadderStreak]; modeRound=x.modeRound; modeSwissRounds=x.modeSwissRounds;
+  goldGoalActive=x.goldGoalActive; goldGoalGame=x.goldGoalGame; timerPhase=x.timerPhase; remaining=x.remaining; timerEndAt=x.timerEndAt;
+  syncClock();renderFixtures();renderRanking();saveAppState();
+}
+function enterGoldGoal(game){
+  if(!isDecisionMode() || !fixtures[game]) return;
+  clearInterval(timer);timer=null;
+  goldGoalActive=true;goldGoalGame=game;timerPhase='gold';remaining=0;
+  $('goldGoalMessage').textContent=goldGoalPhrases[Math.floor(Math.random()*goldGoalPhrases.length)];
+  results[game]=2;
+  playGoldGoalAlarm();syncClock();renderFixtures();renderRanking();saveAppState();
+}
+function finishGoldGoal(game, winnerSide){
+  if(!goldGoalActive || goldGoalGame!==game)return;
+  const m=fixtures[game]; if(!m)return;
+  goldGoalActive=false;goldGoalGame=-1;timerPhase='ready';remaining=+$('matchValue').textContent*60;
+  results[game]=winnerSide;
+  if(playMode==='knockout') advanceKnockout(game);
+  else if(playMode==='ladder') advanceLadder(game);
+  syncClock();renderFixtures();renderRanking();saveAppState();
+}
+function chooseResult(game,next){
+  if(resultLocked)return;
+  const m=fixtures[game]; if(!m)return;
+  if(!(goldGoalActive && goldGoalGame===game)) saveResultUndoSnapshot();
+  if(isDecisionMode()){
+    if(goldGoalActive && goldGoalGame===game){
+      if(next===1 || next===3) finishGoldGoal(game,next);
+      return;
+    }
+    if(next===2){ enterGoldGoal(game); return; }
+    results[game]=next;
+    if(playMode==='knockout') advanceKnockout(game);
+    else if(playMode==='ladder') advanceLadder(game);
+  }else{
+    results[game]=next;
+    if(playMode==='swiss') advanceSwiss(game);
+  }
+  renderFixtures();renderRanking();saveAppState();
+}
+function undoResult(){
+  if(resultLocked || !resultUndoStack.length)return;
+  restoreResultUndoSnapshot();
+}
+function toggleResultLock(){
+  resultLocked=!resultLocked;
+  playUiSound(resultLocked?'lock':'unlock');
+  renderFixtures();saveAppState();
+}
+function advanceKnockout(game){
+  const m=fixtures[game],v=results[game];
+  if(!m||v===2)return;
+  const winner=v===1?m[0]:m[1], loser=v===1?m[1]:m[0];
+  addModeResult(m[0],m[1],v);
+  if(!modeRoundWinners.includes(winner))modeRoundWinners.push(winner);
+  if(!modeEliminated.includes(loser))modeEliminated.push(loser);
+  modeRoundPlayed.push({round:modeRound,a:m[0],b:m[1],winner,loser});
+  const remainingFixtures=fixtures.filter((_,i)=>i!==game);
+  const remainingResults=results.filter((_,i)=>i!==game);
+  if(remainingFixtures.some((_,i)=>remainingResults[i]===0)){
+    fixtures=remainingFixtures;results=remainingResults;
+    return;
+  }
+  finishKnockoutRound();
+}
+function advanceLadder(game){
+  const m=fixtures[game],v=results[game];
+  if(!m||v===2)return;
+  const winner=v===1?m[0]:m[1], loser=winner===m[0]?m[1]:m[0];
+  addModeResult(m[0],m[1],v);
+  modeLadderStreak[winner]=(modeLadderStreak[winner]||0)+1;
+  modeLadderStreak[loser]=0;
+  const waiting=modeQueue.shift();
+  if(waiting===undefined){
+    modeQueue.push(loser);
+    const next=modeQueue.shift();
+    fixtures=[[winner,next===undefined?loser:next]];
+  }else{
+    modeQueue.push(loser);
+    fixtures=[[winner,waiting]];
+  }
+  results=[0];modeRound++;
+}
+function advanceSwiss(game){
+  const m=fixtures[game],v=results[game];
+  if(!m||v===0)return;
+  addModeResult(m[0],m[1],v);
+  modeRoundPlayed.push({round:modeRound,a:m[0],b:m[1],result:v});
+  const remainingFixtures=fixtures.filter((_,i)=>i!==game);
+  const remainingResults=results.filter((_,i)=>i!==game);
+  if(remainingFixtures.some((_,i)=>remainingResults[i]===0)){
+    fixtures=remainingFixtures;results=remainingResults;
+    return;
+  }
+  if(modeRound>=modeSwissRounds){fixtures=[];results=[];return;}
+  modeRound++;
+  fixtures=swissPairRound(fixtures);results=fixtures.map(()=>0);
+}
+function renderFixtures(){
+  const heading=playMode==='knockout'?'TUR EŞLEŞMELERİ':playMode==='ladder'?'MERDİVEN MAÇI':playMode==='swiss'?`İSVİÇRE KAOSU • TUR ${modeRound}/${modeSwissRounds}`:'KİM KİMLE OYNAYACAK?';
+  const head=document.querySelector('#page2 .resultsHead h2');if(head)head.textContent=heading;
+  const html=fixtures.map((m,i)=>{
+    const a=getTeamName(m[0]),b=getTeamName(m[1]),v=results[i]||0;
+    const gold=goldGoalActive&&goldGoalGame===i;
+    return `<div class="fixture decisionFixture ${gold?'goldDecision':''} ${resultLocked?'resultLocked':''}"><div class="fixtureNo">${i+1}</div><div class="decisionLayout"><span class="decisionTeam">${esc(a)}</span><b class="decisionVs">VS</b><span class="decisionTeam right">${esc(b)}</span><div></div><div class="decisionButtons"><button class="decisionBtn winBtn ${v===1?'selected':''}" data-decision="1" data-fixture="${i}" ${resultLocked?'disabled':''} aria-label="${esc(a)} kazandı">✓</button><button class="decisionBtn drawBtn ${v===2?'selected':''}" data-decision="2" data-fixture="${i}" ${resultLocked?'disabled':''} aria-label="Eşit">＝</button><button class="decisionBtn winBtn ${v===3?'selected':''}" data-decision="3" data-fixture="${i}" ${resultLocked?'disabled':''} aria-label="${esc(b)} kazandı">✓</button></div><div></div><div class="decisionLabels"><span>KAZANDI</span><span>EŞİT</span><span>KAZANDI</span></div></div></div>`;
+  }).join('');
+  $('resultGrid').innerHTML=html|| (playMode==='knockout'&&modeChampion!==null?`<div class="small">🏆 ${esc(getTeamName(modeChampion))} şampiyon oldu!</div>`:'<div class="small">Bu mod için yeni maç bekleniyor.</div>');
+  syncResultTools();
+}
+$('page2').addEventListener('click',e=>{
+  const undo=e.target.closest('[data-result-undo]');if(undo){undoResult();return;}
+  const lock=e.target.closest('[data-result-lock]');if(lock){toggleResultLock();return;}
+  const b=e.target.closest('[data-fixture]');if(!b||resultLocked)return;
+  const game=+b.dataset.fixture;const decision=b.dataset.decision;
+  if(decision)chooseResult(game,+decision);
+});
+function getTeamName(i){const name=(teamNames[i]||'').trim();return name||`TAKIM ${i+1}`}
+function stats(i){
+  if(playMode!=='league')return modeScore(i);
+  let w=0,d=0,l=0,pts=0;
+  fixtures.forEach((m,g)=>{const v=results[g]||0;if(!v)return;const mine=m[0]===i;if(!mine&&m[1]!==i)return;if(v===2){d++;pts+=1}else if((v===1&&mine)||(v===3&&!mine)){w++;pts+=2}else{l++}});
+  return {w,d,l,pts};
+}
+function syncResultTools(){
+  const tools=document.querySelectorAll('#page2 [data-result-undo],#page2 [data-result-lock]');
+  tools.forEach(b=>{
+    if(b.dataset.resultUndo!==undefined){b.disabled=resultUndoStack.length===0||resultLocked;}
+    if(b.dataset.resultLock!==undefined){b.classList.toggle('locked',resultLocked);b.textContent=resultLocked?'🔒':'🔓';b.setAttribute('aria-label',`Sonuçları ${resultLocked?'aç':'kilitle'}`);}
+  });
+}
+function renderRanking(){
+  let arr=generatedTeams.map((_,i)=>({i,...stats(i)}));
+  let label='PUAN';
+  if(playMode==='knockout'){
+    label='DURUM';
+    const elimRound={};modeEliminated.forEach((id,idx)=>{elimRound[id]=idx});
+    arr.sort((a,b)=>{
+      if(a.i===modeChampion)return -1;if(b.i===modeChampion)return 1;
+      const ae=modeEliminated.indexOf(a.i),be=modeEliminated.indexOf(b.i);
+      if(ae<0&&be<0)return b.w-a.w||a.i-b.i;
+      if(ae<0)return -1;if(be<0)return 1;
+      return ae-be;
+    });
+  }else if(playMode==='ladder'){
+    label='PUAN';
+    arr.sort((a,b)=>b.pts-a.pts||b.w-a.w||(modeLadderStreak[b.i]||0)-(modeLadderStreak[a.i]||0)||a.i-b.i);
+  }else if(playMode==='swiss'){
+    label='PUAN';
+    arr.sort((a,b)=>b.pts-a.pts||b.w-a.w||b.d-a.d||a.i-b.i);
+  }else{
+    arr.sort((a,b)=>b.pts-a.pts||b.w-a.w||a.l-b.l||a.i-b.i);
+  }
+  $('ranking').innerHTML=arr.map((r,pos)=>{
+    const name=getTeamName(r.i),initials=(name.trim()[0]||'T').toUpperCase();
+    let value=r.pts,sub=`${r.w}G • ${r.d}B • ${r.l}M`;
+    if(playMode==='knockout'){
+      if(r.i===modeChampion){value='🏆';sub='ŞAMPİYON'}
+      else if(modeEliminated.includes(r.i)){value='ELENDİ';sub=`${r.w}G • ${r.d}B • ${r.l}M`}
+      else {value='DEVAM';sub=`${r.w}G • ${r.d}B • ${r.l}M`}
+    }else if(playMode==='ladder') sub=`${r.w}G • ${r.d}B • ${r.l}M ${modeLadderStreak[r.i]>0?`• <span class="streakFire" title="${modeLadderStreak[r.i]} maçlık galibiyet serisi">🔥<span>${modeLadderStreak[r.i]}</span></span>`:''}`;
+    else if(playMode==='swiss') sub=`${r.w}G • ${r.d}B • ${r.l}M`;
+    const badge=pos===0?'👑':playMode==='knockout'&&r.i===modeChampion?'🏆':'';
+    return `<div class="rank"><div class="rankNum">${pos+1}.</div><div class="avatar">${initials}<span class="badge">${badge}</span></div><div><div class="rankName">${esc(name)}</div><div class="rankStats">${sub}</div></div><div class="rankPts">${esc(value)}</div></div>`;
+  }).join('');
+  syncResultTools();
+}
+
+function updateSessionInfo(plan){
+  if(!plan)return;
+  $('sessionInfo').textContent=`MAÇ ${plan.match} DK • MAÇ SAYISI ${plan.spread===0?`HER TAKIM ${plan.distribution[0]}`:`${plan.distribution.join(' - ')}`} • TOPLAM MAÇ ${plan.games} • EKSTRA SÜRE ${plan.buffer} DK`;
+}
+// Timer
+function timerLabel(){
+  if(timerPhase==='match') return '⚽ MAÇ DEVAM EDİYOR';
+  if(timerPhase==='swap') return '🔄 DEĞİŞİM / KISA MOLA';
+  if(timerPhase==='gold') return '🥇 ALTIN GOL MODU';
+  return '⚽ MAÇ HAZIR — BAŞLAT';
+}
+function timerContextLabel(){
+  if(timerPhase==='swap'){
+    if(playMode==='knockout') return '⚔️ Kısa mola • Sonraki tur için takımlar hazırlanıyor.';
+    if(playMode==='ladder') return '🔥 Kısa mola • Çıkan takım yerini sıradaki takıma bırakıyor.';
+    if(playMode==='swiss') return '🇨🇭 Kısa mola • Yeni tur ve eşleşmeler hazırlanıyor.';
+    return '🔄 Kısa mola • Sıradaki maç için takımlar hazırlanıyor.';
+  }
+  if(timerPhase==='ready') return '▶️ Maç hazır • Süre yeniden ayarlandı, BAŞLAT ile başlatılır.';
+  if(timerPhase==='gold') return '∞ Süre sınırsız • Gol olduğunda sonuç kaydedilir.';
+  return '';
+}
+function syncClock(){
+  const m=Math.floor(remaining/60),s=remaining%60;
+  $('clock').textContent=goldGoalActive?'∞':(remaining>=3600?`${String(Math.floor(remaining/3600)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+  $('timerPhase').textContent=timerLabel();
+  if($('timerContext')) $('timerContext').textContent=timerContextLabel();
+  $('page2')?.classList.toggle('goldPageActive',goldGoalActive);
+  document.body.classList.toggle('goldModeActive',goldGoalActive);
+  $('goldPageEffects')?.classList.toggle('show',goldGoalActive);
+  $('clockWrap')?.classList.toggle('goldGoalActive',goldGoalActive);
+  $('goldGoalBadge')?.classList.toggle('show',false);
+  $('goldGoalHero')?.classList.toggle('show',goldGoalActive);
+  $('clock')?.classList.toggle('goldGoalActive',goldGoalActive);
+  const match=+$('matchValue').textContent, swap=+$('swapValue').textContent;
+  const plan=(selectedPlanKey&&getPlans(people,teamCount).find(x=>x.key===selectedPlanKey))||getPlans(people,teamCount)[0];
+  if(plan){
+    const dist=plan.spread===0?`HER TAKIM ${plan.distribution[0]} MAÇ`:`MAÇ DAĞILIMI ${plan.distribution.join(' - ')}`;
+    $('sessionInfo').innerHTML=`<b>MAÇ ${match} DK</b> • MAÇ SAYISI ${dist.replace('HER TAKIM ','').replace('MAÇ DAĞILIMI ','')} • TOPLAM MAÇ ${plan.games} • EKSTRA SÜRE ${plan.buffer} DK`;
+  }else $('sessionInfo').innerHTML=`<b>MAÇ ${match} DK</b> • TOPLAM MAÇ — • EKSTRA SÜRE —`;
+}
+function setMatch(v){
+  if(timer || !['ready'].includes(timerPhase))return;
+  v=clamp(v,1,120);$('matchValue').textContent=v;remaining=v*60;syncClock();saveAppState();
+}
+function setSwap(v){
+  if(timer || !['ready'].includes(timerPhase))return;
+  v=clamp(v,1,10);$('swapValue').textContent=v;syncClock();saveAppState();
+}
+function bindHold(id, step, delay=1000, rate=110){ platformHold($(id),step,delay,rate); }
+$('matchMinus').onclick=()=>setMatch(+$('matchValue').textContent-1);
+$('matchPlus').onclick=()=>setMatch(+$('matchValue').textContent+1);
+$('swapMinus').onclick=()=>setSwap(+$('swapValue').textContent-1);
+$('swapPlus').onclick=()=>setSwap(+$('swapValue').textContent+1);
+bindHold('matchMinus',()=>setMatch(+$('matchValue').textContent-1));
+bindHold('matchPlus',()=>setMatch(+$('matchValue').textContent+1));
+bindHold('swapMinus',()=>setSwap(+$('swapValue').textContent-1));
+bindHold('swapPlus',()=>setSwap(+$('swapValue').textContent+1));
+
+function refreshTimerFromClock(){
+  if(timerPhase==='gold' || !timerEndAt) return;
+  const now=Date.now();
+  remaining=Math.max(0,Math.ceil((timerEndAt-now)/1000));
+  if(remaining>0){syncClock();return;}
+  clearInterval(timer);timer=null;
+  if(timerPhase==='match'){
+    playMatchEndAlarm();
+    timerPhase='swap';
+    remaining=+$('swapValue').textContent*60;
+    timerEndAt=now+remaining*1000;
+    syncClock();saveAppState();
+    runTimerPhase();
+  }else if(timerPhase==='swap'){
+    playSwapEndAlarm();
+    timerPhase='ready';
+    timerEndAt=0;
+    remaining=+$('matchValue').textContent*60;
+    syncClock();saveAppState();
+  }
+}
+function runTimerPhase(){
+  clearInterval(timer);timer=null;
+  if(timerPhase==='gold' || !['match','swap'].includes(timerPhase))return;
+  if(!timerEndAt) timerEndAt=Date.now()+Math.max(0,remaining)*1000;
+  refreshTimerFromClock();
+  if(timerPhase==='match'||timerPhase==='swap'){
+    timer=setInterval(refreshTimerFromClock,250);
+    saveAppState();
+  }
+}
+function beginMatch(){
+  clearInterval(timer);timer=null; timerEndAt=0; goldGoalActive=false;goldGoalGame=-1;
+  timerPhase='match';remaining=+$('matchValue').textContent*60;
+  timerEndAt=Date.now()+remaining*1000;
+  syncClock();saveAppState();
+  runTimerPhase();
+}
+$('start').onclick=()=>{
+  if(timerPhase==='gold')return;
+  if(timerPhase==='ready') beginMatch();
+  else if(timerPhase==='match' || timerPhase==='swap') runTimerPhase();
+};
+$('pause').onclick=()=>{
+  if(timerPhase==='gold')return;
+  refreshTimerFromClock();
+  clearInterval(timer);timer=null;timerEndAt=0;saveAppState();
+};
+$('reset').onclick=()=>{
+  if(timerPhase==='gold'||goldGoalActive)return;
+  clearInterval(timer);timer=null;timerEndAt=0;manualTimer=false;goldGoalActive=false;goldGoalGame=-1;timerPhase='ready';remaining=+$('matchValue').textContent*60;syncClock();saveAppState();
+};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden && (timerPhase==='match'||timerPhase==='swap')){refreshTimerFromClock();if(timerEndAt>0)runTimerPhase();}});
+window.addEventListener('pageshow',()=>{if(timerPhase==='match'||timerPhase==='swap'){refreshTimerFromClock();if(timerEndAt>0)runTimerPhase();}});
+
+function getAudio(){
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    return audioCtx;
+  }catch(e){return null;}
+}
+function tone(freq,duration=.07,volume=.035,type='sine',when=0){
+  const c=getAudio();if(!c)return;
+  const o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,c.currentTime+when);
+  g.gain.setValueAtTime(.0001,c.currentTime+when);
+  g.gain.exponentialRampToValueAtTime(volume,c.currentTime+when+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+when+duration);
+  o.connect(g);g.connect(c.destination);o.start(c.currentTime+when);o.stop(c.currentTime+when+duration+.02);
+}
+function playUiSound(kind='click', level=3){
+  const sounds={
+    click:()=>tone(440,.045,.018,'sine'),
+    nav:()=>{tone(523,.055,.018,'sine');tone(659,.075,.016,'sine',.045)},
+    plus:()=>{tone(523,.06,.022,'sine');tone(659,.07,.020,'sine',.05);tone(784,.09,.018,'sine',.11)},
+    minus:()=>{tone(784,.06,.020,'sine');tone(659,.07,.018,'sine',.05);tone(523,.09,.016,'sine',.11)},
+    level1:()=>tone(330,.10,.024,'triangle'),
+    level2:()=>tone(392,.10,.024,'triangle'),
+    level3:()=>tone(494,.10,.024,'triangle'),
+    level4:()=>tone(587,.10,.026,'triangle'),
+    level5:()=>{tone(659,.08,.026,'triangle');tone(784,.12,.024,'triangle',.07)},
+    abi:()=>{tone(392,.08,.022,'triangle');tone(523,.09,.024,'triangle',.06);tone(784,.15,.026,'triangle',.13)},
+    lock:()=>{tone(330,.07,.021,'triangle');tone(494,.11,.024,'triangle',.06)},
+    unlock:()=>{tone(494,.07,.021,'triangle');tone(330,.11,.018,'triangle',.06)},
+    winLeft:()=>{tone(523,.08,.026,'sine');tone(659,.09,.025,'sine',.06);tone(784,.13,.024,'sine',.13)},
+    winRight:()=>{tone(587,.08,.026,'sine');tone(740,.09,.025,'sine',.06);tone(880,.13,.024,'sine',.13)},
+    draw:()=>{tone(440,.10,.023,'sine');tone(554,.12,.021,'sine',.08)},
+    start:()=>{tone(523,.08,.025,'sine');tone(659,.08,.024,'sine',.07);tone(784,.16,.026,'sine',.14)},
+    pause:()=>{tone(659,.09,.022,'sine');tone(523,.13,.019,'sine',.07)},
+    reset:()=>{tone(392,.08,.020,'triangle');tone(523,.10,.022,'triangle',.07)},
+    generate:()=>{tone(523,.07,.022,'sine');tone(659,.08,.024,'sine',.06);tone(784,.10,.026,'sine',.12);tone(1046,.16,.022,'sine',.20)},
+    delete:()=>{tone(330,.10,.021,'sawtooth');tone(247,.15,.018,'sawtooth',.08)},
+    cancel:()=>{tone(392,.07,.018,'sine');tone(330,.10,.016,'sine',.06)},
+    undo:()=>{tone(659,.07,.022,'sine');tone(523,.10,.020,'sine',.06)},
+    resultUndo:()=>{tone(784,.06,.022,'sine');tone(659,.09,.020,'sine',.05)},
+    resultLock:()=>{tone(392,.07,.022,'triangle');tone(587,.11,.024,'triangle',.06)},
+    resultUnlock:()=>{tone(587,.07,.022,'triangle');tone(392,.11,.020,'triangle',.06)},
+    add:()=>{tone(659,.07,.022,'sine');tone(784,.10,.022,'sine',.06)},
+    mode:()=>{tone(494,.07,.021,'sine');tone(659,.10,.022,'sine',.06)},
+    plan:()=>{tone(587,.07,.022,'sine');tone(784,.11,.022,'sine',.06)},
+    save:()=>{tone(523,.08,.022,'sine');tone(659,.10,.023,'sine',.07);tone(784,.13,.024,'sine',.15)},
+    saved:()=>{tone(659,.08,.022,'sine');tone(784,.09,.024,'sine',.06);tone(1046,.16,.026,'sine',.13)},
+    generic:()=>tone(440,.05,.018,'sine')
+  };
+  (sounds[kind]||sounds.generic)();
+}
+function buttonSoundFor(b){
+  if(b.id==='copyShareCode'||b.id==='pasteShareCode')return 'saved';
+  if(b.dataset.device)return 'mode';
+  if(b.id==='globalReset')return 'delete';
+  if(b.id==='cancelGlobalReset')return 'cancel';
+  if(b.id==='confirmGlobalReset')return 'delete';
+  if(b.id==='nav1'||b.id==='nav2'||b.id==='nav3'||b.id==='backToSetup')return 'nav';
+  if(b.id?.endsWith('Plus'))return 'plus';
+  if(b.id?.endsWith('Minus'))return 'minus';
+  if(b.id==='add')return 'add';
+  if(b.id==='generate')return 'generate';
+  if(b.id==='start')return 'start';
+  if(b.id==='pause')return 'pause';
+  if(b.id==='reset')return 'reset';
+  if(b.dataset.level)return `level${Math.max(1,Math.min(5,+b.dataset.score||3))}`;
+  if(b.dataset.abi!==undefined||b.dataset.abiTeam!==undefined)return 'abi';
+  if(b.dataset.resultLock!==undefined)return b.textContent.includes('🔒')?'resultUnlock':'resultLock';
+  if(b.dataset.teamLock!==undefined)return b.textContent.includes('🔒')?'unlock':'lock';
+  if(b.dataset.resultUndo!==undefined)return 'resultUndo';
+  if(b.dataset.mode)return 'mode';
+  if(b.dataset.planKey||b.dataset.teamOpen!==undefined||b.dataset.clearPlan!==undefined)return 'plan';
+  if(b.dataset.decision==='1')return 'winLeft';
+  if(b.dataset.decision==='3')return 'winRight';
+  if(b.dataset.decision==='2')return 'draw';
+  if(b.classList.contains('fixtureResult'))return 'click';
+  return 'click';
+}
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest('button');
+  if(!b||b.disabled)return;
+  let kind=buttonSoundFor(b);
+  if(b.dataset.level)kind=`level${Math.max(1,Math.min(5,+b.dataset.score||3))}`;
+  playUiSound(kind);
+},true);
+
+function playGoldGoalAlarm(){
+  // Uzun ve belirgin Altın Gol uyarısı.
+  tone(740,.22,.055,'sawtooth');tone(880,.28,.05,'sawtooth',.18);tone(740,.22,.05,'sawtooth',.42);tone(988,.75,.055,'triangle',.68);
+}
+function playMatchEndAlarm(){
+  // Maç bitişi: daha uzun ve belirgin bir alarm.
+  tone(880,.30,.055,'sine');tone(1046,.34,.05,'sine',.20);tone(880,.30,.05,'sine',.43);tone(1175,.55,.05,'sine',.66);
+}
+function playSwapEndAlarm(){
+  // Değişim süresi bitişi: yeni maç hazır olduğunda daha uzun ikinci alarm.
+  tone(659,.28,.05,'triangle');tone(784,.32,.05,'triangle',.20);tone(988,.38,.055,'triangle',.43);tone(784,.65,.05,'triangle',.72);
+}
+
+
+// Pages
+function switchPage(n){
+  $('page1').classList.toggle('active',n===1);$('page2').classList.toggle('active',n===2);$('page3').classList.toggle('active',n===3);
+  $('nav1').classList.toggle('active',n===1);$('nav2').classList.toggle('active',n===2);$('nav3').classList.toggle('active',n===3);
+  if(n===3)updateDeviceNotice();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$('nav1').onclick=()=>switchPage(1);
+$('nav2').onclick=()=>switchPage(2);
+$('nav3').onclick=()=>switchPage(3);
+$('backToSetup').onclick=()=>switchPage(1);
+
+window.matchFlowStartApp=function(d){
+  if(window.__matchFlowBootHandled)return;
+  const data=d||window.__matchFlowBoot||{};
+  const name=String(data.name||'').trim(); const choice=['apple','android','computer'].includes(data.device)?data.device:'computer';
+  if(!name)return;
+  window.__matchFlowBootHandled=true;
+  profileName=name;deviceChoice=choice;
+  saveProfile();
+  applyDeviceMode();
+  platformBoot(choice);
+  setTimeout(()=>{hideDeviceSetup();updateDeviceNotice();saveAppState();refreshShareCode();playUiSound('saved')},80);
+};
+window.addEventListener('matchflow:device-selected',e=>window.matchFlowStartApp(e.detail));
+$('globalReset').onclick=()=>$('confirmOverlay').classList.add('show');
+$('cancelGlobalReset').onclick=()=>$('confirmOverlay').classList.remove('show');
+$('confirmOverlay').addEventListener('click',e=>{if(e.target.id==='confirmOverlay')e.currentTarget.classList.remove('show')});
+$('confirmGlobalReset').onclick=clearAllData;
+
+// Otomatik kayıt sistemi. Her tıklamada localStorage yazmak yerine kısa bir
+// gecikmeyle tek kayıt yapılır. Böylece telefon daha az yorulur ve arayüz daha akıcı kalır.
+let autoSaveTimer=null;
+let resetting=false;
+function scheduleAutoSave(delay=180){
+  if(resetting)return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer=setTimeout(()=>{autoSaveTimer=null;if(!resetting)saveAppState();},delay);
+}
+document.addEventListener('input',e=>{if(e.target?.id!=='shareCode')scheduleAutoSave(180);});
+document.addEventListener('change',e=>{if(e.target?.id!=='shareCode')scheduleAutoSave(120);});
+document.addEventListener('click',()=>scheduleAutoSave(220));
+window.addEventListener('beforeunload',()=>{if(!resetting)saveAppState();});
+window.addEventListener('pagehide',()=>{if(!resetting)saveAppState();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&!resetting)saveAppState();});
+
+function initial(){
+  const restored=loadAppState();
+  const hasProfile=loadProfile();
+  if(!hasProfile){showDeviceSetup()}else{hideDeviceSetup();applyDeviceMode();platformBoot(deviceChoice);updateDeviceNotice()}
+  if(restored)return;
+  teamNames=[];teamLocks=[];
+  $('peopleValue').textContent=people;
+  $('sessionValue').textContent=sessionMinutes;
+  autoPlan();
+  $('teamValue').textContent=teamCount;
+  renderNames();ensurePlayers(people);renderModePicker();renderRecommend();
+  const p=getPlans(people,teamCount)[0];
+  if(p){autoSetMatch(p.match);updateSessionInfo(p);}
+  saveAppState();
+  refreshShareCode();
+}
+initial();
+</script>
+</body>
+</html>
